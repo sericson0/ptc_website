@@ -16,6 +16,7 @@ lessons/01-embrace-and-box-step.js   one file per group of lessons  ← what you
 lessons/02-coming-soon.js
 lessons/03-extra-resources.js
 lessons/_TEMPLATE.js              copy this to start a new group
+images/                           stills from the clips, shown beside the key points
 assets/theme.js                   colors, fonts, light/dark
 assets/library.css                styling
 assets/library.js                 the code that draws the page — no edits needed
@@ -76,6 +77,29 @@ Open the file in `lessons/` for the group you are working on. A lesson looks lik
 - To add a lesson, copy one `{ ... }` block and paste it after another inside the same `lessons: [ ... ]` list. Keep the comma between blocks.
 - Leave out anything you do not want: no `notes` line means no paragraph, `points: []` means no bullet list, no `youtube`/`drive` means a "No video for this lesson" box instead of a broken player.
 - `kind` can be `slides`, `doc`, `sheet`, `pdf`, `video`, or `link`. It only changes the icon.
+
+### Pictures beside the key points
+
+A bullet in `points` or `practice` is either plain text, or an object that also carries a still from the clip. The still sits at the right of that bullet:
+
+```js
+points: [
+  "A plain bullet, with no picture",
+  { text: "A bullet with a picture beside it", image: "images/l1-w-shape.jpg" }
+]
+```
+
+The stills live in [images/](images/) and are 420px-wide JPEGs, shown at 175px (they stack under the text on a phone). To cut a new one, pick the moment in the video and use ffmpeg:
+
+```sh
+# -ss is the timestamp; crop is WIDTH:HEIGHT:X:Y measured from the top-left
+ffmpeg -ss 66 -i "L1 Embrace.mp4" -frames:v 1 \
+  -vf "crop=400:300:370:45,scale=420:-1" -q:v 5 images/my-still.jpg
+```
+
+Crop tightly around the dancers, keeping a 4:3 shape so every still is the same size on the page. A whole 16:9 frame shrunk to 175px leaves the dancers too small to read. Drop the `crop=...,` part to keep the full frame.
+
+The existing stills carry no `alt` text, because each one sits right next to the bullet that describes it and a screen reader would otherwise read the same thing twice. Add `alt: "..."` to a bullet if its picture shows something the words do not.
 
 ### The still image before you press play
 

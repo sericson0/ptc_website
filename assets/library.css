@@ -213,6 +213,22 @@ a { color: var(--accent); }
 .points li { margin: 0 0 5px; }
 .points li:last-child { margin-bottom: 0; }
 .points li::marker { color: var(--accent); }
+
+/* A bullet can carry a still from the clip. The grid lives inside the li,
+   not on it, so the li stays a list-item and keeps its marker. */
+.block.with-shots { max-width: 820px; }
+.points li.has-shot { margin-bottom: 10px; }
+.points li.has-shot .pt {
+  display: grid; grid-template-columns: minmax(0, 1fr) 175px; gap: 18px; align-items: start;
+}
+.points .shot {
+  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2);
+}
+@media (max-width: 700px) {
+  .points li.has-shot .pt { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .points .shot { max-width: 280px; }
+}
 .materials { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .materials a {
   display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: center; text-decoration: none; color: var(--ink);

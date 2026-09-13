@@ -30,8 +30,11 @@ PTC.addUnit({
       notes: "A sentence or two under the video.",
 
       points: [                // bullets under the heading "Key points"
-        "First point",
-        "Second point"
+        "A plain bullet, with no picture",
+
+        // Give a bullet a still from the clip and it shows at its right:
+        { text: "A bullet with a picture beside it",
+          image: "images/my-still.jpg" }
       ],
 
       practice: [              // bullets under the heading "Practice"

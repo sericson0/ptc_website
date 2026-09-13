@@ -89,12 +89,26 @@
       '</div>';
   }
 
+  // A bullet is either plain text, or { text, image } to hang a still from
+  // the clip on the right of it.
+  const textOf = item => (typeof item === "string" ? item : (item && item.text) || "");
+
   // A titled bullet list. A missing or empty list draws nothing at all.
   function bullets(title, items) {
     const rows = list(items);
     if (!rows.length) return "";
-    return '<div class="block"><h3 class="block-title">' + esc(title) + '</h3><ul class="points">' +
-      rows.map(i => '<li>' + esc(i) + '</li>').join("") + '</ul></div>';
+    const cells = rows.map(item => {
+      const r = typeof item === "string" ? { text: item } : item;
+      const shot = r.image
+        ? '<img class="shot" src="' + esc(r.image) + '" alt="' + esc(r.alt || "") + '" loading="lazy" decoding="async">'
+        : "";
+      return '<li' + (shot ? ' class="has-shot"' : "") + '><div class="pt"><span>' +
+        esc(r.text) + '</span>' + shot + '</div></li>';
+    });
+    const withShots = rows.some(r => r && r.image);
+    return '<div class="block' + (withShots ? " with-shots" : "") + '">' +
+      '<h3 class="block-title">' + esc(title) + '</h3>' +
+      '<ul class="points">' + cells.join("") + '</ul></div>';
   }
 
   // Everything written under the video: notes first, then the bullet lists.
@@ -114,7 +128,8 @@
 
   // What the search box matches a lesson against.
   function haystack(lesson) {
-    return [lesson.title, ...list(lesson.notes), ...list(lesson.points), ...list(lesson.practice),
+    return [lesson.title, ...list(lesson.notes),
+      ...list(lesson.points).map(textOf), ...list(lesson.practice).map(textOf),
       ...list(lesson.materials).map(m => m.label)].join(" ").toLowerCase();
   }
 
