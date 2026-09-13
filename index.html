@@ -301,11 +301,33 @@ const COURSE = {
   .lesson .body {
     display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 20px 28px; padding: 18px 18px 22px 66px;
   }
+  /* No materials means no sidebar, so the video gets the room instead. */
+  .lesson .body.solo { grid-template-columns: minmax(0, 1fr); }
+  .lesson .body.solo .player, .lesson .body.solo .watch, .lesson .body.solo .notes { max-width: 760px; }
   @media (max-width: 860px) { .lesson .body { grid-template-columns: 1fr; } }
   @media (max-width: 560px) { .lesson > summary, .lesson .body { padding-left: 14px; } }
 
   .player { aspect-ratio: 16 / 9; max-width: 100%; background: var(--panel-2); border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
   .player iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+  /* Thumbnail stand-in. Clicking it swaps in the real player, so a lesson
+     costs one image instead of a full YouTube frame until someone watches. */
+  .poster {
+    display: block; position: relative; width: 100%; height: 100%; padding: 0; margin: 0;
+    border: 0; background: var(--panel-2); cursor: pointer; overflow: hidden;
+  }
+  .poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .poster .play {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    background: linear-gradient(to top, rgba(0, 0, 0, .28), rgba(0, 0, 0, 0) 55%);
+  }
+  .poster .play svg { width: 64px; height: 64px; transition: transform .18s ease; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)); }
+  .poster .play .pb { fill: var(--heading); stroke: var(--panel); }
+  .poster .play .pt { fill: var(--panel); }
+  .poster:hover .play svg, .poster:focus-visible .play svg { transform: scale(1.08); }
+  .watch { margin: 10px 0 0; font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .watch a { text-decoration: none; }
+  .watch a:hover { text-decoration: underline; }
   .placeholder { height: 100%; display: grid; place-content: center; text-align: center; gap: 6px; padding: 20px; color: var(--ink-2); font-size: 14px; }
   .placeholder svg { width: 40px; height: 40px; margin: 0 auto 4px; stroke: var(--ink-3); fill: none; stroke-width: 1.6; }
   .placeholder code { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
@@ -371,13 +393,33 @@ const COURSE = {
   };
   const KIND_NAMES = { slides: "Slides", doc: "Document", sheet: "Spreadsheet", pdf: "PDF", video: "Video", link: "Link" };
 
-  function embedSrc(lesson) {
-    if (lesson.youtube && !isPlaceholder(lesson.youtube))
-      return "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(lesson.youtube) + "?rel=0";
-    if (lesson.drive && !isPlaceholder(lesson.drive))
-      return "https://drive.google.com/file/d/" + encodeURIComponent(lesson.drive) + "/preview";
+  function video(lesson) {
+    if (lesson.youtube && !isPlaceholder(lesson.youtube)) {
+      const id = encodeURIComponent(lesson.youtube);
+      return {
+        src: "https://www.youtube-nocookie.com/embed/" + id + "?rel=0",
+        poster: "https://i.ytimg.com/vi/" + id + "/maxresdefault.jpg",
+        posterAlt: "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg",
+        watch: "https://youtu.be/" + id,
+        where: "YouTube"
+      };
+    }
+    if (lesson.drive && !isPlaceholder(lesson.drive)) {
+      const id = encodeURIComponent(lesson.drive);
+      return {
+        src: "https://drive.google.com/file/d/" + id + "/preview",
+        poster: "",
+        watch: "https://drive.google.com/file/d/" + id + "/view",
+        where: "Google Drive"
+      };
+    }
     return null;
   }
+
+  // Colors are set in CSS: var() is not valid inside an SVG presentation attribute.
+  const PLAY_ICON = '<svg viewBox="0 0 68 48" aria-hidden="true">' +
+    '<rect class="pb" x="1" y="1" width="66" height="46" rx="12" stroke-width="2"/>' +
+    '<path class="pt" d="M27 15.5 46 24l-19 8.5z"/></svg>';
 
   function placeholder(lesson) {
     const hasKey = lesson.youtube || lesson.drive;
@@ -415,19 +457,27 @@ const COURSE = {
             '<span>' + esc(m.label) + '<span class="kind">' + KIND_NAMES[kind] + '</span></span></a></li>';
         }).join("");
         const dateStr = lesson.date ? new Date(lesson.date + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "";
-        const src = embedSrc(lesson);
+        const v = video(lesson);
         return '<li><details class="lesson" id="' + lid + '" data-search="' + esc([lesson.title, lesson.notes, ...(lesson.materials || []).map(m => m.label)].join(" ").toLowerCase()) + '">' +
           '<summary><div><div class="t">' + esc(lesson.title) + '</div>' + (dateStr ? '<div class="d">' + dateStr + '</div>' : "") + '</div>' +
           '<span class="dur">' + esc(lesson.duration || "") + '</span></summary>' +
-          '<div class="body">' +
+          '<div class="body' + (mats ? "" : " solo") + '">' +
             '<div>' +
-              '<div class="player"' + (src ? ' data-src="' + esc(src) + '"' : "") + '>' + (src ? "" : placeholder(lesson)) + '</div>' +
+              '<div class="player">' + (v
+                ? '<button class="poster" type="button" data-src="' + esc(v.src) + '" aria-label="Play ' + esc(lesson.title) + '">' +
+                    (v.poster ? '<img src="' + esc(v.poster) + '" data-alt="' + esc(v.posterAlt || "") + '" alt="" loading="lazy">' : "") +
+                    '<span class="play">' + PLAY_ICON + '</span></button>'
+                : placeholder(lesson)) + '</div>' +
+              '<p class="watch">' +
+                (v ? '<a href="' + esc(v.watch) + '" target="_blank" rel="noopener">Watch on ' + v.where + ' &#8599;</a>' : "") +
+                (mats ? "" : '<a href="#' + lid + '">Link to this lesson</a>') +
+              '</p>' +
               (lesson.notes ? '<p class="notes">' + esc(lesson.notes) + '</p>' : "") +
             '</div>' +
-            '<aside class="side"><h3>Materials</h3>' +
-              (mats ? '<ul class="materials">' + mats + '</ul>' : '<p class="empty-side">No downloads for this lesson.</p>') +
-              '<p class="permalink"><a href="#' + lid + '">Link to this lesson</a></p>' +
-            '</aside>' +
+            (mats
+              ? '<aside class="side"><h3>Materials</h3><ul class="materials">' + mats + '</ul>' +
+                '<p class="permalink"><a href="#' + lid + '">Link to this lesson</a></p></aside>'
+              : "") +
           '</div></details></li>';
       }).join("");
 
@@ -446,23 +496,39 @@ const COURSE = {
     if (units.length < 2) $("#layout").classList.add("solo");
   }
 
-  // Load a video only when its lesson is opened; unload when closed so many open tabs stay light.
+  // A lesson shows its thumbnail until someone presses play; the real player
+  // loads on that press and is torn down when the lesson closes, so playback
+  // stops and a long page never holds a dozen live video frames.
   function wirePlayers() {
+    document.addEventListener("click", e => {
+      const b = e.target.closest(".poster");
+      if (!b) return;
+      const p = b.parentElement;
+      p.dataset.poster = p.innerHTML;
+      const f = document.createElement("iframe");
+      f.src = b.dataset.src + (b.dataset.src.includes("?") ? "&" : "?") + "autoplay=1";
+      f.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen";
+      f.allowFullscreen = true;
+      f.title = b.getAttribute("aria-label");
+      p.innerHTML = "";
+      p.appendChild(f);
+      f.focus();
+    });
+
     document.querySelectorAll(".lesson").forEach(d => {
       d.addEventListener("toggle", () => {
+        if (d.open) return;
         const p = $(".player", d);
-        if (!p || !p.dataset.src) return;
-        if (d.open && !p.firstElementChild) {
-          const f = document.createElement("iframe");
-          f.src = p.dataset.src;
-          f.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen";
-          f.allowFullscreen = true;
-          f.loading = "lazy";
-          f.title = $(".t", d).textContent;
-          p.appendChild(f);
-        } else if (!d.open && p.firstElementChild) {
-          p.innerHTML = "";
-        }
+        if (p && p.dataset.poster) p.innerHTML = p.dataset.poster;
+      });
+    });
+
+    // If a thumbnail cannot load (offline, or a host that blocks i.ytimg.com),
+    // drop the image and leave the play button on its own.
+    document.querySelectorAll(".poster img").forEach(img => {
+      img.addEventListener("error", () => {
+        if (img.dataset.alt && img.src !== img.dataset.alt) img.src = img.dataset.alt;
+        else img.remove();
       });
     });
   }

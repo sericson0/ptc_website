@@ -11,7 +11,9 @@ A single-file page (`index.html`) that shows class videos and materials in colla
 - **Units** are collapsible cards. **Lessons** inside them are collapsible rows.
 - There is no page title on the embed. The Google Site supplies the heading above it.
 - Each lesson holds one video (YouTube or Google Drive), optional notes, and a list of materials (slides, docs, PDFs, links).
-- Videos load only when a lesson is opened, so a page with 100 clips stays fast.
+- Each lesson shows its video thumbnail. Pressing play swaps in the real player, so a long page loads one image per lesson instead of a dozen live video frames. Closing a lesson stops playback.
+- Every video also carries a "Watch on YouTube" link, in case an embed is blocked on a school or work network.
+- A lesson with no materials gives its full width to the video.
 - Search box filters lessons by title, notes, and material names.
 - "Expand all" / "Collapse all" buttons, a sticky unit index, and shareable links to any unit or lesson (`#u2-unit-1-foundations-l3`).
 - Works at phone width.
