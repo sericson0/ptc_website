@@ -1,7 +1,8 @@
 /* =====================================================================
    GROUP 1 — The Embrace and Box Step
    ---------------------------------------------------------------------
-   Fill in the "TODO" lines below and delete any you do not want.
+   The points and practice bullets below were pulled from the audio of the
+   three clips, so edit or cut any that do not say what you want them to.
    A lesson draws only the parts you give it: no `notes` means no
    paragraph, an empty `points: []` means no bullet list, and so on.
 
@@ -19,47 +20,55 @@
    ===================================================================== */
 PTC.addUnit({
   title: "The Embrace and Box Step",
-  summary: "The first three lessons: the embrace, the basic box, and turning it.",
+  summary: "Key pointers for the embrace, the steps of the basic box, and tips for turning the box step.",
   lessons: [
     {
       title: "Lesson 1 · Embrace",
       youtube: "om_3wXzEBXk",
-      notes: "TODO: a sentence or two on what this clip covers.",
+      notes: "Key pointers for the embrace.",
       points: [
-        "TODO: posture and frame cue",
-        "TODO: where the hands and arms go",
-        "TODO: how to find the connection with your partner"
+        "Open side: the leader's left hand and the follower's right meet palm to palm, at about shoulder height, with the leader's palm turned towards the follower's head.",
+        "Closed side: the leader's right arm and the follower's left.",
+        "Keep the joined hands centered between the couple, not pulled towards one side or the other.",
+        "Wrists and elbows stay in one line. Do not crook the wrists in either direction.",
+        "Picture the arms of the open side as a W: elbows below the shoulders, hands meeting at shoulder height.",
+        "Two embraces in tango. In close embrace the bodies touch; in open embrace the spines stay a little apart, which gives the feet more space.",
+        "In the open embrace the leader's right hand goes on the follower's shoulder blade, and the follower's left hand on the leader's tricep."
       ],
       practice: [
-        "TODO: what to drill before the next class"
+        "Starting out in tango, dance in the open embrace and work towards the close embrace."
       ],
       materials: []
     },
     {
       title: "Lesson 2 · The box step",
       youtube: "vVXi_a_QcLw",
-      notes: "TODO: a sentence or two on what this clip covers.",
+      notes: "The steps of the basic box, a useful sequence of six steps for tango.",
       points: [
-        "TODO: the count and the shape of the box",
-        "TODO: which foot starts, leader and follower",
-        "TODO: the mistake to watch out for"
+        "The six steps: back 1, side 2, forward outside partner 3, forward 4, side 5, change weight 6.",
+        "Begin with the weight on the left leg for leaders, the right for followers.",
+        "The first step is back for the leader (back right) and forward for the follower (forward left).",
+        "Outside partner on step 3 means both of the leader's feet are to one side of both of the follower's feet, with a line between the two, rather than staggered.",
+        "Step 4 goes forward again, back inside partner.",
+        "The last step brings the feet together and changes weight, ready to start again."
       ],
       practice: [
-        "TODO: what to drill before the next class"
+        "Walk the six counts on your own: back, side, forward, forward, side, together and change weight."
       ],
       materials: []
     },
     {
       title: "Lesson 3 · Rotating the box step",
       youtube: "IijVRP4NKb0",
-      notes: "TODO: a sentence or two on what this clip covers.",
+      notes: "Tips for turning the box step.",
       points: [
-        "TODO: how much to turn on each box",
-        "TODO: how the lead is given",
-        "TODO: keeping the frame while turning"
+        "Rotating the box means every step travels the same way around, instead of returning to where you started.",
+        "Trick one, the diagonal cross: on the first step the leader steps diagonally and the follower takes the other diagonal, which sets up the rotation.",
+        "Trick two, the step around: on the side step the follower takes a larger step around the leader.",
+        "The second half uses the same two tricks with the roles reversed, so the leader crosses diagonally and then takes the larger step around."
       ],
       practice: [
-        "TODO: what to drill before the next class"
+        "Know the box step first. Lesson 2 walks through the six steps."
       ],
       materials: []
     }
