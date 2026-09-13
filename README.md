@@ -77,6 +77,21 @@ Open the file in `lessons/` for the group you are working on. A lesson looks lik
 - Leave out anything you do not want: no `notes` line means no paragraph, `points: []` means no bullet list, no `youtube`/`drive` means a "No video for this lesson" box instead of a broken player.
 - `kind` can be `slides`, `doc`, `sheet`, `pdf`, `video`, or `link`. It only changes the icon.
 
+### The still image before you press play
+
+By default each lesson shows YouTube's own thumbnail — the image you see on the video's YouTube page. YouTube keeps that image in several sizes but does not make every size for every video, so the page asks for the biggest and works down (`maxresdefault` → `sddefault` → `hqdefault` → `mqdefault`) until it finds one. You do not have to do anything for this.
+
+To change it, either:
+
+- **Set a custom thumbnail on YouTube** (Studio → the video → Thumbnail → Upload). It reaches this page within a few minutes; nothing here needs editing. A 1280×720 image also gives the page the sharpest size to work with.
+- **Or point the lesson at any image** with a `poster` line, which wins over YouTube's:
+
+```js
+poster: "https://.../my-image.jpg",
+```
+
+  This is also the only way to give a **Google Drive** video a still image — Drive does not publish thumbnail URLs.
+
 ## Step 3 — Add a group of lessons
 
 1. Copy `lessons/_TEMPLATE.js` to `lessons/04-something.js` and fill it in. The leading number only keeps the folder tidy.

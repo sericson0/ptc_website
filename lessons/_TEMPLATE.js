@@ -23,6 +23,10 @@ PTC.addUnit({
       youtube: "PASTE_VIDEO_ID",   // the part after v= in the YouTube link
       // drive: "PASTE_FILE_ID",   // use this instead for a Google Drive file
 
+      // poster: "https://...",    // optional: your own still image for the
+                                   // lesson. Without it, YouTube's thumbnail
+                                   // is used; a Drive video has none.
+
       notes: "A sentence or two under the video.",
 
       points: [                // bullets under the heading "Key points"

@@ -45,13 +45,24 @@
 
   /* ---------- the pieces of one lesson ---------- */
 
+  // YouTube keeps a thumbnail in several sizes but not every size for every
+  // video, and it answers a missing one with a grey placeholder rather than
+  // nothing — so the page walks this list, biggest first, until it gets a
+  // real frame. A lesson can put its own image in front with
+  //   poster: "https://..."
+  function posters(lesson, id) {
+    const own = lesson.poster ? [lesson.poster] : [];
+    if (!id) return own;
+    return own.concat(["maxresdefault", "sddefault", "hqdefault", "mqdefault"]
+      .map(size => "https://i.ytimg.com/vi/" + id + "/" + size + ".jpg"));
+  }
+
   function video(lesson) {
     if (lesson.youtube && !isPlaceholder(lesson.youtube)) {
       const id = encodeURIComponent(lesson.youtube);
       return {
         src: "https://www.youtube-nocookie.com/embed/" + id + "?rel=0",
-        poster: "https://i.ytimg.com/vi/" + id + "/maxresdefault.jpg",
-        posterAlt: "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg",
+        posters: posters(lesson, id),
         watch: "https://youtu.be/" + id,
         where: "YouTube"
       };
@@ -60,7 +71,7 @@
       const id = encodeURIComponent(lesson.drive);
       return {
         src: "https://drive.google.com/file/d/" + id + "/preview",
-        poster: "",
+        posters: posters(lesson, ""),   // Drive has no thumbnail URL; poster: works
         watch: "https://drive.google.com/file/d/" + id + "/view",
         where: "Google Drive"
       };
@@ -121,7 +132,7 @@
         '<div>' +
           '<div class="player">' + (v
             ? '<button class="poster" type="button" data-src="' + esc(v.src) + '" aria-label="Play ' + esc(lesson.title) + '">' +
-                (v.poster ? '<img src="' + esc(v.poster) + '" data-alt="' + esc(v.posterAlt || "") + '" alt="" loading="lazy">' : "") +
+                (v.posters.length ? '<img src="' + esc(v.posters[0]) + '" data-more="' + esc(v.posters.slice(1).join("|")) + '" alt="" loading="lazy">' : "") +
                 '<span class="play">' + PLAY_ICON + '</span></button>'
             : placeholder(lesson)) + '</div>' +
           '<p class="watch">' +
@@ -214,13 +225,24 @@
       });
     });
 
-    // If a thumbnail cannot load (offline, or a host that blocks i.ytimg.com),
-    // fall back to the smaller size, then drop the image entirely.
+    // Step down to the next thumbnail size. Two different things count as a
+    // miss. The image can fail outright (offline, or a network that blocks
+    // i.ytimg.com) — that fires "error". Or YouTube can answer a size it does
+    // not have with HTTP 404 *and a valid 120x90 grey placeholder*, which the
+    // browser loads happily; only its size gives it away, so every load is
+    // measured. Running out of sizes leaves the play button on its own.
+    const nextPoster = img => {
+      const more = (img.dataset.more || "").split("|").filter(Boolean);
+      if (!more.length) { img.remove(); return; }
+      img.dataset.more = more.slice(1).join("|");
+      img.src = more[0];
+    };
+
     document.querySelectorAll(".poster img").forEach(img => {
-      img.addEventListener("error", () => {
-        if (img.dataset.alt && img.src !== img.dataset.alt) img.src = img.dataset.alt;
-        else img.remove();
-      });
+      const check = () => { if (img.naturalWidth && img.naturalWidth <= 120) nextPoster(img); };
+      img.addEventListener("error", () => nextPoster(img));
+      img.addEventListener("load", check);
+      if (img.complete) check();   // a cached image can beat these listeners
     });
   }
 
