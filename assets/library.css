@@ -1,0 +1,229 @@
+/* =====================================================================
+   PTC Class Library — styling.
+   ---------------------------------------------------------------------
+   Colors, fonts and corner radius come from assets/theme.js; the values
+   below are only fallbacks for if that file fails to load. Everything
+   else — spacing, layout, the shape of the cards — lives here.
+   ===================================================================== */
+
+:root {
+  /* Parameters (overridden by assets/theme.js) */
+  --heading-light: #660000; --heading-dark: #f0b3b3;
+  --accent-light: #8c1d1d;  --accent-dark: #e09a9a;
+  --ground-light: #fff4e8;  --ground-dark: #1e1614;
+  --panel-light:  #fffcf7;  --panel-dark:  #2a1f1c;
+  --ink-light:    #2b211c;  --ink-dark:    #f0e4da;
+  --radius: 10px;
+  --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+  --focus: #a33b00;
+
+  /* Light palette, derived from the parameters */
+  --heading: var(--heading-light);
+  --accent: var(--accent-light);
+  --ground: var(--ground-light);
+  --panel: var(--panel-light);
+  --ink: var(--ink-light);
+  --panel-2: color-mix(in srgb, var(--ink) 6%, var(--panel));
+  --ink-2: color-mix(in srgb, var(--ink) 72%, var(--panel));
+  --ink-3: color-mix(in srgb, var(--ink) 48%, var(--panel));
+  --line: color-mix(in srgb, var(--ink) 14%, var(--panel));
+  --line-2: color-mix(in srgb, var(--ink) 24%, var(--panel));
+  --accent-ink: #ffffff;
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--panel));
+  --shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 8px 24px -12px rgba(0, 0, 0, .18);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --heading: var(--heading-dark);
+    --accent: var(--accent-dark);
+    --ground: var(--ground-dark);
+    --panel: var(--panel-dark);
+    --ink: var(--ink-dark);
+    --panel-2: color-mix(in srgb, var(--ink) 5%, var(--panel));
+    --ink-2: color-mix(in srgb, var(--ink) 70%, var(--panel));
+    --ink-3: color-mix(in srgb, var(--ink) 45%, var(--panel));
+    --line: color-mix(in srgb, var(--ink) 12%, var(--panel));
+    --line-2: color-mix(in srgb, var(--ink) 20%, var(--panel));
+    --accent-ink: #1e1614;
+    --accent-soft: color-mix(in srgb, var(--accent) 18%, var(--panel));
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .5);
+  }
+}
+:root[data-theme="dark"] {
+  --heading: var(--heading-dark);
+  --accent: var(--accent-dark);
+  --ground: var(--ground-dark);
+  --panel: var(--panel-dark);
+  --ink: var(--ink-dark);
+  --panel-2: color-mix(in srgb, var(--ink) 5%, var(--panel));
+  --ink-2: color-mix(in srgb, var(--ink) 70%, var(--panel));
+  --ink-3: color-mix(in srgb, var(--ink) 45%, var(--panel));
+  --line: color-mix(in srgb, var(--ink) 12%, var(--panel));
+  --line-2: color-mix(in srgb, var(--ink) 20%, var(--panel));
+  --accent-ink: #1e1614;
+  --accent-soft: color-mix(in srgb, var(--accent) 18%, var(--panel));
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .5);
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: light dark; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  padding-block: 16px 48px;
+  padding-inline: clamp(16px, 4vw, 40px);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.wrap { max-width: 1120px; margin: 0 auto; }
+
+/* ---------- toolbar (no page title: the Google Site supplies it) ---------- */
+.head { display: flex; justify-content: flex-end; padding-bottom: 14px; }
+.tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+@media (max-width: 560px) { .head { justify-content: stretch; } .tools { width: 100%; } .search { flex: 1 1 100%; } }
+.search { position: relative; }
+.search input {
+  font: inherit; font-size: 15px; color: var(--ink); background: var(--panel);
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 9px 14px 9px 38px; width: 260px; max-width: 100%;
+}
+.search input::placeholder { color: var(--ink-3); }
+.search svg { position: absolute; left: 13px; top: 50%; translate: 0 -50%; width: 16px; height: 16px; fill: none; stroke: var(--ink-3); stroke-width: 2; }
+.btn {
+  font: inherit; font-size: 14px; font-weight: 500; color: var(--ink-2); background: transparent;
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 8px 14px; cursor: pointer;
+}
+.btn:hover { color: var(--ink); border-color: var(--ink-3); }
+
+/* ---------- layout ---------- */
+.layout { display: grid; grid-template-columns: 220px 1fr; gap: 36px; margin-top: 4px; }
+/* One visible unit needs no sidebar index. */
+.layout.solo { grid-template-columns: 1fr; }
+.layout.solo .index { display: none; }
+@media (max-width: 760px) { .layout { grid-template-columns: 1fr; gap: 20px; } }
+
+.index { position: sticky; top: 16px; align-self: start; }
+@media (max-width: 760px) { .index { position: static; } }
+.index h2 { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--heading); margin: 0 0 10px; font-weight: 500; opacity: .75; }
+.index ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.index a {
+  display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: baseline;
+  padding: 6px 8px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 14px;
+}
+.index a:hover { background: var(--panel-2); color: var(--ink); }
+.index a .n { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+.index .count { margin-top: 14px; font-size: 13px; color: var(--ink-3); }
+@media (max-width: 760px) {
+  .index ol { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  .index a { grid-template-columns: auto 1fr; padding: 5px 10px; border: 1px solid var(--line); background: var(--panel); }
+}
+
+/* ---------- units ---------- */
+.units { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.unit { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); scroll-margin-top: 16px; }
+.unit[open] { border-color: var(--line-2); }
+.unit > summary {
+  list-style: none; cursor: pointer; display: grid; grid-template-columns: 34px 1fr auto; gap: 14px; align-items: center;
+  padding: 16px 18px; border-radius: var(--radius);
+}
+.unit > summary::-webkit-details-marker { display: none; }
+.unit > summary .n {
+  font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--heading);
+  background: var(--accent-soft); border-radius: 6px; height: 34px; display: grid; place-items: center;
+}
+.unit > summary h2 { font-family: var(--serif); font-weight: 600; font-size: 19px; margin: 0; line-height: 1.25; text-wrap: balance; color: var(--heading); }
+.unit > summary .meta { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+.chev { width: 20px; height: 20px; color: var(--ink-3); transition: transform .2s ease; }
+.unit[open] > summary .chev { transform: rotate(180deg); }
+.unit .summary-text { margin: 0; padding: 0 18px 14px 66px; color: var(--ink-2); max-width: 68ch; }
+@media (max-width: 560px) {
+  .unit > summary { grid-template-columns: 30px 1fr auto; gap: 10px; padding: 14px; }
+  .unit > summary .n { height: 30px; }
+  .unit .summary-text { padding-left: 14px; }
+}
+
+/* ---------- lessons ---------- */
+.lessons { list-style: none; margin: 0; padding: 0 0 6px; border-top: 1px solid var(--line); }
+.lesson { border-bottom: 1px solid var(--line); }
+.lesson:last-child { border-bottom: 0; }
+.lesson > summary {
+  list-style: none; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
+  padding: 12px 18px 12px 66px; font-size: 15px;
+}
+.lesson > summary::-webkit-details-marker { display: none; }
+.lesson > summary:hover { background: var(--panel-2); }
+.lesson > summary .t { font-weight: 500; }
+.lesson > summary .d { font-size: 13px; color: var(--ink-3); margin-top: 1px; }
+.lesson > summary .dur { font-family: var(--mono); font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.lesson[open] > summary { background: var(--panel-2); }
+.lesson .body {
+  display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 20px 28px; padding: 18px 18px 22px 66px;
+}
+/* No materials means no sidebar, so the video gets the room instead. */
+.lesson .body.solo { grid-template-columns: minmax(0, 1fr); }
+.lesson .body.solo .player,
+.lesson .body.solo .watch,
+.lesson .body.solo .notes,
+.lesson .body.solo .block { max-width: 760px; }
+@media (max-width: 860px) { .lesson .body { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .lesson > summary, .lesson .body { padding-left: 14px; } }
+
+.player { aspect-ratio: 16 / 9; max-width: 100%; background: var(--panel-2); border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+.player iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+/* Thumbnail stand-in. Clicking it swaps in the real player, so a lesson
+   costs one image instead of a full YouTube frame until someone watches. */
+.poster {
+  display: block; position: relative; width: 100%; height: 100%; padding: 0; margin: 0;
+  border: 0; background: var(--panel-2); cursor: pointer; overflow: hidden;
+}
+.poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.poster .play {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: linear-gradient(to top, rgba(0, 0, 0, .28), rgba(0, 0, 0, 0) 55%);
+}
+.poster .play svg { width: 64px; height: 64px; transition: transform .18s ease; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)); }
+.poster .play .pb { fill: var(--heading); stroke: var(--panel); }
+.poster .play .pt { fill: var(--panel); }
+.poster:hover .play svg, .poster:focus-visible .play svg { transform: scale(1.08); }
+.watch { margin: 10px 0 0; font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.watch a { text-decoration: none; }
+.watch a:hover { text-decoration: underline; }
+.placeholder { height: 100%; display: grid; place-content: center; text-align: center; gap: 6px; padding: 20px; color: var(--ink-2); font-size: 14px; }
+.placeholder svg { width: 40px; height: 40px; margin: 0 auto 4px; stroke: var(--ink-3); fill: none; stroke-width: 1.6; }
+.placeholder code { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+
+/* ---------- notes and bullet points under the video ---------- */
+.notes { margin: 14px 0 0; color: var(--ink-2); max-width: 65ch; }
+.notes + .notes { margin-top: 8px; }
+.block { margin: 16px 0 0; max-width: 65ch; }
+.block-title, .side h3 {
+  font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--heading); margin: 0 0 8px; font-weight: 500; opacity: .75;
+}
+.points { margin: 0; padding-left: 20px; color: var(--ink-2); }
+.points li { margin: 0 0 5px; }
+.points li:last-child { margin-bottom: 0; }
+.points li::marker { color: var(--accent); }
+.materials { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.materials a {
+  display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: center; text-decoration: none; color: var(--ink);
+  font-size: 14px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel);
+}
+.materials a:hover { border-color: var(--accent); }
+.materials svg { width: 16px; height: 16px; stroke: var(--accent); fill: none; stroke-width: 1.8; }
+.materials .kind { display: block; font-size: 12px; color: var(--ink-3); }
+.empty-side { font-size: 14px; color: var(--ink-3); margin: 0; }
+.permalink { font-size: 13px; }
+
+.no-results { color: var(--ink-2); padding: 24px; text-align: center; border: 1px dashed var(--line-2); border-radius: var(--radius); }
+[hidden] { display: none !important; }
+mark { background: var(--accent-soft); color: inherit; padding: 0 2px; border-radius: 3px; }

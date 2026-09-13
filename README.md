@@ -1,21 +1,38 @@
 # PTC Class Library — Google Sites setup
 
-A single-file page (`index.html`) that shows class videos and materials in collapsible units and lessons. It is hosted on GitHub Pages and embedded in the Google Site.
+A small static site that shows class videos and materials in collapsible units and lessons. It is hosted on GitHub Pages and embedded in the Google Site.
 
 **Live page:** https://sericson0.github.io/ptc_website/
 
-**To update the site:** edit `index.html`, commit, push. GitHub Pages redeploys in about a minute; the Google Site embed picks it up on its next load (hard-refresh if it looks stale).
+**To update the site:** edit the files, commit, push. GitHub Pages redeploys in about a minute; the Google Site embed picks it up on its next load (hard-refresh if it looks stale).
+
+To preview before pushing, double-click `index.html` — it runs straight from disk, no server needed.
+
+## Where things live
+
+```
+index.html                        the page, and the list of lesson groups it shows
+lessons/01-embrace-and-box-step.js   one file per group of lessons  ← what you edit
+lessons/02-coming-soon.js
+lessons/03-extra-resources.js
+lessons/_TEMPLATE.js              copy this to start a new group
+assets/theme.js                   colors, fonts, light/dark
+assets/library.css                styling
+assets/library.js                 the code that draws the page — no edits needed
+```
+
+Day to day you only open a file in `lessons/`. Each one is a single `PTC.addUnit({ ... })` call holding one group and its lessons.
 
 ## What the page does
 
-- **Units** are collapsible cards. **Lessons** inside them are collapsible rows.
+- **Units** (groups of lessons) are collapsible cards. **Lessons** inside them are collapsible rows.
 - There is no page title on the embed. The Google Site supplies the heading above it.
-- Each lesson holds one video (YouTube or Google Drive), optional notes, and a list of materials (slides, docs, PDFs, links).
+- Each lesson holds one video (YouTube or Google Drive), notes, two bullet lists, and a list of materials (slides, docs, PDFs, links). Anything you leave out simply is not drawn.
 - Each lesson shows its video thumbnail. Pressing play swaps in the real player, so a long page loads one image per lesson instead of a dozen live video frames. Closing a lesson stops playback.
 - Every video also carries a "Watch on YouTube" link, in case an embed is blocked on a school or work network.
 - A lesson with no materials gives its full width to the video.
-- Search box filters lessons by title, notes, and material names.
-- "Expand all" / "Collapse all" buttons, a sticky unit index, and shareable links to any unit or lesson (`#u2-unit-1-foundations-l3`).
+- Search box filters lessons by title, notes, bullet points, and material names.
+- "Expand all" / "Collapse all" buttons, a sticky unit index, and shareable links to any unit or lesson (`#u1-the-embrace-and-box-step-l3`).
 - Works at phone width.
 
 ## Step 1 — Put the videos somewhere embeddable
@@ -26,41 +43,59 @@ The video ID is the part after `v=` in the URL. For `https://www.youtube.com/wat
 
 **Google Drive (works, with caveats).** Right-click the file, Share, set to **Anyone with the link, Viewer**. The file ID is the long string in `https://drive.google.com/file/d/FILE_ID/view`. Drive's player is slower to start and sometimes shows "video is still processing" for a while after upload.
 
-## Step 2 — Add your lessons
+## Step 2 — Write the lessons
 
-Open `index.html`. The `COURSE` block near the top of the file (right after `THEME`) holds everything. A unit looks like this:
+Open the file in `lessons/` for the group you are working on. A lesson looks like this:
 
 ```js
 {
-  title: "The Embrace and Box Step",
-  summary: "One sentence about the unit.",
-  lessons: [
-    {
-      title: "Lesson 1 · Embrace",
-      date: "2026-09-10",        // optional, YYYY-MM-DD
-      duration: "14:05",         // optional, shown at right
-      youtube: "om_3wXzEBXk",    // OR  drive: "FILE_ID"
-      notes: "What this clip covers.",
-      materials: [
-        { label: "Lesson 1 slides", kind: "slides", url: "https://..." },
-        { label: "Worksheet",       kind: "pdf",    url: "https://..." }
-      ]
-    }
+  title: "Lesson 1 · Embrace",
+  date: "2026-09-10",        // optional, YYYY-MM-DD
+  duration: "14:05",         // optional, shown at the right of the row
+  youtube: "om_3wXzEBXk",    // OR  drive: "FILE_ID"
+
+  notes: "A sentence or two under the video.",
+
+  points: [                  // bullets under the heading "Key points"
+    "Lead comes from the chest, not the arm",
+    "Common mistake: rushing the second beat"
+  ],
+
+  practice: [                // bullets under the heading "Practice"
+    "Ten boxes on your own before next week"
+  ],
+
+  materials: [
+    { label: "Lesson 1 slides", kind: "slides", url: "https://..." },
+    { label: "Worksheet",       kind: "pdf",    url: "https://..." }
   ]
 }
 ```
 
-- To add a lesson, copy one `{ ... }` lesson block and paste it after another one inside the same `lessons: [ ... ]` list. Keep the comma between blocks.
-- To add a unit, copy a whole unit block and paste it into `units: [ ... ]`.
+- The three real lessons ship with **`TODO:` placeholder text** in `notes`, `points`, and `practice`. That text is visible on the live page until you replace it — search the `lessons/` folder for `TODO:` to find every spot.
+- To add a lesson, copy one `{ ... }` block and paste it after another inside the same `lessons: [ ... ]` list. Keep the comma between blocks.
+- Leave out anything you do not want: no `notes` line means no paragraph, `points: []` means no bullet list, no `youtube`/`drive` means a "No video for this lesson" box instead of a broken player.
 - `kind` can be `slides`, `doc`, `sheet`, `pdf`, `video`, or `link`. It only changes the icon.
-- Leave `youtube`/`drive` out for a lesson with no video (materials only).
-- A lesson with no `youtube`/`drive` line shows a "No video for this lesson" box instead of a broken player.
-- **To hide a unit without deleting it**, add `hidden: true` as its first line. "Unit 2" and "Extra resources" are hidden this way right now; delete that one line to bring either back.
-- The sidebar unit index appears automatically once two or more units are visible.
 
-## Step 3 — Change colors and fonts
+## Step 3 — Add a group of lessons
 
-The `THEME` block at the top of `index.html` controls the look. Change a value, save, push.
+1. Copy `lessons/_TEMPLATE.js` to `lessons/04-something.js` and fill it in. The leading number only keeps the folder tidy.
+2. Add one line to the list in `index.html`:
+
+```html
+<!-- ======= THE GROUPS OF LESSONS ON THIS PAGE, in order ======= -->
+<script defer src="lessons/01-embrace-and-box-step.js"></script>
+<script defer src="lessons/04-something.js"></script>
+```
+
+Groups appear on the page in the order they are listed there, so reordering the page means reordering these lines.
+
+- **To hide a group without deleting it**, add `hidden: true` as the first line inside its `PTC.addUnit({ ... })`. "Unit 2" and "Extra resources" are hidden this way right now; delete that one line to bring either back.
+- The sidebar unit index appears automatically once two or more groups are visible.
+
+## Step 4 — Change colors and fonts
+
+`assets/theme.js` controls the look. Change a value, save, push.
 
 ```js
 const THEME = {
@@ -91,7 +126,7 @@ const THEME = {
 - Fonts are loaded from Google Fonts by name. Browse fonts.google.com and paste the family name exactly, e.g. `"Lora"` or `"Nunito Sans"`.
 - `mode: "light"` is the safe choice for an embed in a light Google Site. Use `"auto"` only if the surrounding site also switches with the viewer's device.
 
-## Step 4 — Embed it in the Google Site
+## Step 5 — Embed it in the Google Site
 
 The page is hosted by GitHub Pages at the live address above (repo **Settings → Pages**, deploying from `main`, root folder).
 
@@ -99,7 +134,16 @@ The page is hosted by GitHub Pages at the live address above (repo **Settings �
 2. Drag the block's corner handle to make it tall. Google Sites embeds have a fixed height; content taller than the block scrolls inside it. A good starting size is the height of the page with one unit open.
 3. **Publish** the site.
 
-If the fixed-height scrolling feels awkward later, an alternative is one embed block per unit (a copy of the file with only that unit in `COURSE.units`) stacked down the Sites page, so each block stays short.
+### One embed block per group
+
+If the fixed-height scrolling feels awkward, put each group in its own embed block and stack them down the Sites page, so every block stays short. Add `?unit=` to the address to narrow the page to one group:
+
+```
+https://sericson0.github.io/ptc_website/?unit=1        first visible group
+https://sericson0.github.io/ptc_website/?unit=box      any group whose title matches
+```
+
+The number counts visible groups only, so it shifts if you hide or unhide one; matching on a word from the title is steadier. An address that matches nothing falls back to showing the whole page. In single-group mode the sidebar index disappears and the group opens by itself.
 
 ## Site-level structure (native Google Sites, no code)
 
@@ -108,9 +152,8 @@ Use Sites' own tools for the navigation around this page:
 - **Dropdown menu in the top bar:** in the Pages panel, drag a page underneath another to nest it. Nested pages appear as a dropdown under the parent. Suggested tree:
   - Home
   - Class Library ← this embed
-  - Unit pages (optional, if you later want one page per unit)
+  - Unit pages (optional, one `?unit=` embed each)
   - Resources
   - About / Contact
 - **Native collapsible text:** Insert → Collapsible group gives you a heading that expands to show text. Use it for FAQs or long text; it cannot hold a video, which is why the video library uses the embed above.
 - **Table of contents block:** Insert → Table of contents auto-links to headings on the Sites page. Useful on long native pages.
-
