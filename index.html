@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<!--
+  PTC Class Library — single-file page for Google Sites.
+
+  HOW TO USE
+  Everything you normally edit is in the two blocks right below <title>:
+    THEME  - colors, fonts, light/dark mode
+    COURSE - units, lessons, videos, materials
+  Hosted on GitHub Pages and embedded in Google Sites with Insert > Embed > By URL.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ARTIFACT-START -->
+<title>PTC Class Library</title>
+<script>
+/* =====================================================================
+   THEME — change these to restyle the whole page
+   ---------------------------------------------------------------------
+   Colors are hex. "Dark" variants are used when mode is "dark", or when
+   mode is "auto" and the viewer's device is set to dark.
+   Fonts are Google Fonts family names (fonts.google.com); they load
+   automatically.
+   ===================================================================== */
+const THEME = {
+  mode: "light",              // "light" | "dark" | "auto"
+
+  accent:      "#0f6f7c",     // links, unit numbers, icons, highlights
+  accentDark:  "#5cc4cf",     //   ...same, on a dark background
+
+  background:     "#f5f7f6",  // page background behind the cards
+  backgroundDark: "#131a1d",
+
+  panel:      "#ffffff",      // card background
+  panelDark:  "#1b2428",
+
+  text:      "#1d2a30",       // main text color
+  textDark:  "#e7ecea",
+
+  headingFont: "IBM Plex Serif",   // course title and unit titles
+  bodyFont:    "IBM Plex Sans",    // everything else
+  monoFont:    "IBM Plex Mono",    // numbers, labels, durations
+
+  cornerRadius: 10                 // px, roundness of cards and buttons
+};
+
+/* =====================================================================
+   COURSE — your units, lessons, videos and materials
+   ---------------------------------------------------------------------
+   Each lesson can have ONE video, given as either
+     youtube: "VIDEO_ID"   (the part after v= or youtu.be/ in the link)
+     drive:   "FILE_ID"    (Drive share link ID; file must be shared
+                            "Anyone with the link")
+   Materials are optional links. kind: slides | doc | sheet | pdf | link | video
+   Leave youtube/drive out for a lesson with no video yet.
+   ===================================================================== */
+const COURSE = {
+  eyebrow: "Class videos & materials",
+  title: "PTC Class Library",
+  subtitle: "Recorded lesson clips and handouts, grouped by unit. Open a unit, then a lesson, to watch.",
+  units: [
+    {
+      title: "Unit 1 · Getting started",
+      summary: "The first three lessons: the embrace, the basic box, and turning it.",
+      lessons: [
+        {
+          title: "Lesson 1 · Embrace",
+          youtube: "om_3wXzEBXk",
+          notes: "",
+          materials: []
+        },
+        {
+          title: "Lesson 2 · The box step",
+          youtube: "vVXi_a_QcLw",
+          notes: "",
+          materials: []
+        },
+        {
+          title: "Lesson 3 · Rotating the box step",
+          youtube: "IijVRP4NKb0",
+          notes: "",
+          materials: []
+        }
+      ]
+    },
+    {
+      title: "Unit 2 · Coming soon",
+      summary: "More lessons will appear here as they are recorded.",
+      lessons: [
+        {
+          title: "Lesson 4",
+          notes: "Not recorded yet.",
+          materials: []
+        }
+      ]
+    },
+    {
+      title: "Extra resources",
+      summary: "Reference material that is not tied to a single lesson.",
+      lessons: [
+        {
+          title: "Handouts and links",
+          notes: "Add slides, PDFs, or links here as materials.",
+          materials: [
+            { label: "Example handout (replace me)", kind: "pdf", url: "https://example.com" }
+          ]
+        }
+      ]
+    }
+  ]
+};
+/* ===================== END OF SETTINGS ===================== */
+
+// Apply THEME. Runs before the page draws so there is no flash.
+(function () {
+  const r = document.documentElement;
+  const set = (k, v) => r.style.setProperty(k, v);
+  if (THEME.mode === "light" || THEME.mode === "dark") r.dataset.theme = THEME.mode;
+  set("--accent-light", THEME.accent);         set("--accent-dark", THEME.accentDark);
+  set("--ground-light", THEME.background);     set("--ground-dark", THEME.backgroundDark);
+  set("--panel-light", THEME.panel);           set("--panel-dark", THEME.panelDark);
+  set("--ink-light", THEME.text);              set("--ink-dark", THEME.textDark);
+  set("--serif", '"' + THEME.headingFont + '", Georgia, "Times New Roman", serif');
+  set("--sans", '"' + THEME.bodyFont + '", "Segoe UI", Roboto, Helvetica, Arial, sans-serif');
+  set("--mono", '"' + THEME.monoFont + '", Consolas, "Courier New", monospace');
+  set("--radius", THEME.cornerRadius + "px");
+  const fam = f => "family=" + encodeURIComponent(f).replace(/%20/g, "+") + ":ital,wght@0,400;0,500;0,600;1,400";
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "https://fonts.googleapis.com/css2?" + [THEME.headingFont, THEME.bodyFont, THEME.monoFont].map(fam).join("&") + "&display=swap";
+  document.head.appendChild(link);
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  :root {
+    /* Parameters (overridden by THEME at the top of the file) */
+    --accent-light: #0f6f7c;  --accent-dark: #5cc4cf;
+    --ground-light: #f5f7f6;  --ground-dark: #131a1d;
+    --panel-light:  #ffffff;  --panel-dark:  #1b2428;
+    --ink-light:    #1d2a30;  --ink-dark:    #e7ecea;
+    --radius: 10px;
+    --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+    --focus: #f2a541;
+
+    /* Light palette, derived from the parameters */
+    --accent: var(--accent-light);
+    --ground: var(--ground-light);
+    --panel: var(--panel-light);
+    --ink: var(--ink-light);
+    --panel-2: color-mix(in srgb, var(--ink) 6%, var(--panel));
+    --ink-2: color-mix(in srgb, var(--ink) 72%, var(--panel));
+    --ink-3: color-mix(in srgb, var(--ink) 48%, var(--panel));
+    --line: color-mix(in srgb, var(--ink) 14%, var(--panel));
+    --line-2: color-mix(in srgb, var(--ink) 24%, var(--panel));
+    --accent-ink: #ffffff;
+    --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--panel));
+    --shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 8px 24px -12px rgba(0, 0, 0, .18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: var(--accent-dark);
+      --ground: var(--ground-dark);
+      --panel: var(--panel-dark);
+      --ink: var(--ink-dark);
+      --panel-2: color-mix(in srgb, var(--ink) 5%, var(--panel));
+      --ink-2: color-mix(in srgb, var(--ink) 70%, var(--panel));
+      --ink-3: color-mix(in srgb, var(--ink) 45%, var(--panel));
+      --line: color-mix(in srgb, var(--ink) 12%, var(--panel));
+      --line-2: color-mix(in srgb, var(--ink) 20%, var(--panel));
+      --accent-ink: #0d1a1d;
+      --accent-soft: color-mix(in srgb, var(--accent) 18%, var(--panel));
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --accent: var(--accent-dark);
+    --ground: var(--ground-dark);
+    --panel: var(--panel-dark);
+    --ink: var(--ink-dark);
+    --panel-2: color-mix(in srgb, var(--ink) 5%, var(--panel));
+    --ink-2: color-mix(in srgb, var(--ink) 70%, var(--panel));
+    --ink-3: color-mix(in srgb, var(--ink) 45%, var(--panel));
+    --line: color-mix(in srgb, var(--ink) 12%, var(--panel));
+    --line-2: color-mix(in srgb, var(--ink) 20%, var(--panel));
+    --accent-ink: #0d1a1d;
+    --accent-soft: color-mix(in srgb, var(--accent) 18%, var(--panel));
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .5);
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    padding-block: 28px 56px;
+    padding-inline: clamp(16px, 4vw, 40px);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+  .wrap { max-width: 1120px; margin: 0 auto; }
+
+  /* ---------- header ---------- */
+  .head {
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+    gap: 16px 32px; padding-bottom: 20px; border-bottom: 1px solid var(--line-2);
+  }
+  .head h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(26px, 3.2vw, 34px);
+    line-height: 1.15; margin: 0; letter-spacing: -.01em; text-wrap: balance;
+  }
+  .head .sub { margin: 6px 0 0; color: var(--ink-2); max-width: 60ch; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 8px;
+  }
+  .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .search { position: relative; }
+  .search input {
+    font: inherit; font-size: 15px; color: var(--ink); background: var(--panel);
+    border: 1px solid var(--line-2); border-radius: 999px; padding: 9px 14px 9px 38px; width: 260px; max-width: 100%;
+  }
+  .search input::placeholder { color: var(--ink-3); }
+  .search svg { position: absolute; left: 13px; top: 50%; translate: 0 -50%; width: 16px; height: 16px; fill: none; stroke: var(--ink-3); stroke-width: 2; }
+  .btn {
+    font: inherit; font-size: 14px; font-weight: 500; color: var(--ink-2); background: transparent;
+    border: 1px solid var(--line-2); border-radius: 999px; padding: 8px 14px; cursor: pointer;
+  }
+  .btn:hover { color: var(--ink); border-color: var(--ink-3); }
+
+  /* ---------- layout ---------- */
+  .layout { display: grid; grid-template-columns: 220px 1fr; gap: 36px; margin-top: 28px; }
+  @media (max-width: 760px) { .layout { grid-template-columns: 1fr; gap: 20px; } }
+
+  .index { position: sticky; top: 16px; align-self: start; }
+  @media (max-width: 760px) { .index { position: static; } }
+  .index h2 { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; font-weight: 500; }
+  .index ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .index a {
+    display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: baseline;
+    padding: 6px 8px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 14px;
+  }
+  .index a:hover { background: var(--panel-2); color: var(--ink); }
+  .index a .n { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .index .count { margin-top: 14px; font-size: 13px; color: var(--ink-3); }
+  @media (max-width: 760px) {
+    .index ol { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+    .index a { grid-template-columns: auto 1fr; padding: 5px 10px; border: 1px solid var(--line); background: var(--panel); }
+  }
+
+  /* ---------- units ---------- */
+  .units { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .unit { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); scroll-margin-top: 16px; }
+  .unit[open] { border-color: var(--line-2); }
+  .unit > summary {
+    list-style: none; cursor: pointer; display: grid; grid-template-columns: 34px 1fr auto; gap: 14px; align-items: center;
+    padding: 16px 18px; border-radius: var(--radius);
+  }
+  .unit > summary::-webkit-details-marker { display: none; }
+  .unit > summary .n {
+    font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--accent);
+    background: var(--accent-soft); border-radius: 6px; height: 34px; display: grid; place-items: center;
+  }
+  .unit > summary h2 { font-family: var(--serif); font-weight: 600; font-size: 19px; margin: 0; line-height: 1.25; text-wrap: balance; }
+  .unit > summary .meta { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+  .chev { width: 20px; height: 20px; color: var(--ink-3); transition: transform .2s ease; }
+  .unit[open] > summary .chev { transform: rotate(180deg); }
+  .unit .summary-text { margin: 0; padding: 0 18px 14px 66px; color: var(--ink-2); max-width: 68ch; }
+  @media (max-width: 560px) {
+    .unit > summary { grid-template-columns: 30px 1fr auto; gap: 10px; padding: 14px; }
+    .unit > summary .n { height: 30px; }
+    .unit .summary-text { padding-left: 14px; }
+  }
+
+  /* ---------- lessons ---------- */
+  .lessons { list-style: none; margin: 0; padding: 0 0 6px; border-top: 1px solid var(--line); }
+  .lesson { border-bottom: 1px solid var(--line); }
+  .lesson:last-child { border-bottom: 0; }
+  .lesson > summary {
+    list-style: none; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
+    padding: 12px 18px 12px 66px; font-size: 15px;
+  }
+  .lesson > summary::-webkit-details-marker { display: none; }
+  .lesson > summary:hover { background: var(--panel-2); }
+  .lesson > summary .t { font-weight: 500; }
+  .lesson > summary .d { font-size: 13px; color: var(--ink-3); margin-top: 1px; }
+  .lesson > summary .dur { font-family: var(--mono); font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .lesson[open] > summary { background: var(--panel-2); }
+  .lesson .body {
+    display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 20px 28px; padding: 18px 18px 22px 66px;
+  }
+  @media (max-width: 860px) { .lesson .body { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .lesson > summary, .lesson .body { padding-left: 14px; } }
+
+  .player { aspect-ratio: 16 / 9; max-width: 100%; background: var(--panel-2); border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+  .player iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .placeholder { height: 100%; display: grid; place-content: center; text-align: center; gap: 6px; padding: 20px; color: var(--ink-2); font-size: 14px; }
+  .placeholder svg { width: 40px; height: 40px; margin: 0 auto 4px; stroke: var(--ink-3); fill: none; stroke-width: 1.6; }
+  .placeholder code { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+
+  .notes { margin: 14px 0 0; color: var(--ink-2); max-width: 65ch; }
+  .side h3 { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; font-weight: 500; }
+  .materials { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .materials a {
+    display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: center; text-decoration: none; color: var(--ink);
+    font-size: 14px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel);
+  }
+  .materials a:hover { border-color: var(--accent); }
+  .materials svg { width: 16px; height: 16px; stroke: var(--accent); fill: none; stroke-width: 1.8; }
+  .materials .kind { display: block; font-size: 12px; color: var(--ink-3); }
+  .empty-side { font-size: 14px; color: var(--ink-3); margin: 0; }
+  .permalink { font-size: 13px; }
+
+  .no-results { color: var(--ink-2); padding: 24px; text-align: center; border: 1px dashed var(--line-2); border-radius: var(--radius); }
+  [hidden] { display: none !important; }
+  mark { background: var(--accent-soft); color: inherit; padding: 0 2px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div>
+      <p class="eyebrow" id="eyebrow"></p>
+      <h1 id="course-title"></h1>
+      <p class="sub" id="course-sub"></p>
+    </div>
+    <div class="tools">
+      <label class="search">
+        <span class="sr" hidden>Search lessons</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search lessons and materials" autocomplete="off">
+      </label>
+      <button class="btn" id="expand-all" type="button">Expand all</button>
+      <button class="btn" id="collapse-all" type="button">Collapse all</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="index" aria-label="Units">
+      <h2>Units</h2>
+      <ol id="index"></ol>
+      <p class="count" id="count"></p>
+    </nav>
+    <main class="units" id="units"></main>
+  </div>
+</div>
+
+<script>
+
+(function () {
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const isPlaceholder = id => !id || /^PASTE_/i.test(id);
+
+  const ICONS = {
+    chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
+    slides: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M12 17v3M8 21h8"/></svg>',
+    doc: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>',
+    sheet: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M4 15h16M10 4v16"/></svg>',
+    pdf: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 14h1.5a1.5 1.5 0 0 0 0-3H9v6"/></svg>',
+    video: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/></svg>',
+    link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>'
+  };
+  const KIND_NAMES = { slides: "Slides", doc: "Document", sheet: "Spreadsheet", pdf: "PDF", video: "Video", link: "Link" };
+
+  function embedSrc(lesson) {
+    if (lesson.youtube && !isPlaceholder(lesson.youtube))
+      return "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(lesson.youtube) + "?rel=0";
+    if (lesson.drive && !isPlaceholder(lesson.drive))
+      return "https://drive.google.com/file/d/" + encodeURIComponent(lesson.drive) + "/preview";
+    return null;
+  }
+
+  function placeholder(lesson) {
+    const hasKey = lesson.youtube || lesson.drive;
+    return '<div class="placeholder">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></svg>' +
+      (hasKey
+        ? '<div>Video not linked yet</div><code>replace ' + esc(lesson.youtube || lesson.drive) + '</code>'
+        : '<div>No video for this lesson</div>') +
+      '</div>';
+  }
+
+  function render() {
+    $("#eyebrow").textContent = COURSE.eyebrow || "";
+    $("#course-title").textContent = COURSE.title || "";
+    $("#course-sub").textContent = COURSE.subtitle || "";
+    document.title = COURSE.title || document.title;
+
+    const unitsEl = $("#units");
+    const indexEl = $("#index");
+    let lessonCount = 0;
+
+    COURSE.units.forEach((unit, ui) => {
+      const uid = "u" + (ui + 1) + "-" + slug(unit.title);
+      const n = String(ui + 1).padStart(2, "0");
+
+      indexEl.insertAdjacentHTML("beforeend",
+        '<li><a href="#' + uid + '" data-unit="' + uid + '"><span class="n">' + n + '</span><span>' + esc(unit.title) + '</span></a></li>');
+
+      const lessonsHtml = unit.lessons.map((lesson, li) => {
+        lessonCount++;
+        const lid = uid + "-l" + (li + 1);
+        const mats = (lesson.materials || []).map(m => {
+          const kind = KIND_NAMES[m.kind] ? m.kind : "link";
+          return '<li><a href="' + esc(m.url) + '" target="_blank" rel="noopener">' + ICONS[kind] +
+            '<span>' + esc(m.label) + '<span class="kind">' + KIND_NAMES[kind] + '</span></span></a></li>';
+        }).join("");
+        const dateStr = lesson.date ? new Date(lesson.date + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "";
+        const src = embedSrc(lesson);
+        return '<li><details class="lesson" id="' + lid + '" data-search="' + esc([lesson.title, lesson.notes, ...(lesson.materials || []).map(m => m.label)].join(" ").toLowerCase()) + '">' +
+          '<summary><div><div class="t">' + esc(lesson.title) + '</div>' + (dateStr ? '<div class="d">' + dateStr + '</div>' : "") + '</div>' +
+          '<span class="dur">' + esc(lesson.duration || "") + '</span></summary>' +
+          '<div class="body">' +
+            '<div>' +
+              '<div class="player"' + (src ? ' data-src="' + esc(src) + '"' : "") + '>' + (src ? "" : placeholder(lesson)) + '</div>' +
+              (lesson.notes ? '<p class="notes">' + esc(lesson.notes) + '</p>' : "") +
+            '</div>' +
+            '<aside class="side"><h3>Materials</h3>' +
+              (mats ? '<ul class="materials">' + mats + '</ul>' : '<p class="empty-side">No downloads for this lesson.</p>') +
+              '<p class="permalink"><a href="#' + lid + '">Link to this lesson</a></p>' +
+            '</aside>' +
+          '</div></details></li>';
+      }).join("");
+
+      unitsEl.insertAdjacentHTML("beforeend",
+        '<details class="unit" id="' + uid + '"' + (ui === 0 ? " open" : "") + '>' +
+          '<summary><span class="n">' + n + '</span><div><h2>' + esc(unit.title) + '</h2>' +
+          '<div class="meta">' + unit.lessons.length + (unit.lessons.length === 1 ? " lesson" : " lessons") + '</div></div>' + ICONS.chev + '</summary>' +
+          (unit.summary ? '<p class="summary-text">' + esc(unit.summary) + '</p>' : "") +
+          '<ol class="lessons">' + lessonsHtml + '</ol>' +
+        '</details>');
+    });
+
+    unitsEl.insertAdjacentHTML("beforeend", '<div class="no-results" id="no-results" hidden>No lessons match that search.</div>');
+    $("#count").textContent = COURSE.units.length + " units · " + lessonCount + " lessons";
+  }
+
+  // Load a video only when its lesson is opened; unload when closed so many open tabs stay light.
+  function wirePlayers() {
+    document.querySelectorAll(".lesson").forEach(d => {
+      d.addEventListener("toggle", () => {
+        const p = $(".player", d);
+        if (!p || !p.dataset.src) return;
+        if (d.open && !p.firstElementChild) {
+          const f = document.createElement("iframe");
+          f.src = p.dataset.src;
+          f.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen";
+          f.allowFullscreen = true;
+          f.loading = "lazy";
+          f.title = $(".t", d).textContent;
+          p.appendChild(f);
+        } else if (!d.open && p.firstElementChild) {
+          p.innerHTML = "";
+        }
+      });
+    });
+  }
+
+  function wireControls() {
+    const all = sel => document.querySelectorAll(sel);
+    $("#expand-all").addEventListener("click", () => all(".unit, .lesson").forEach(d => { d.open = true; }));
+    $("#collapse-all").addEventListener("click", () => all(".unit, .lesson").forEach(d => { d.open = false; }));
+
+    $("#index").addEventListener("click", e => {
+      const a = e.target.closest("a[data-unit]");
+      if (!a) return;
+      const u = document.getElementById(a.dataset.unit);
+      if (u) u.open = true;
+    });
+
+    const q = $("#q");
+    let t;
+    q.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => filter(q.value), 120); });
+  }
+
+  function filter(raw) {
+    const term = raw.trim().toLowerCase();
+    let shown = 0;
+    document.querySelectorAll(".unit").forEach(u => {
+      let unitShown = 0;
+      u.querySelectorAll(".lesson").forEach(l => {
+        const hit = !term || l.dataset.search.includes(term);
+        l.parentElement.hidden = !hit;
+        if (hit) { unitShown++; shown++; }
+      });
+      u.hidden = term && unitShown === 0;
+      if (term && unitShown) u.open = true;
+    });
+    $("#no-results").hidden = !(term && shown === 0);
+  }
+
+  // Deep links: #unit-id or #lesson-id opens the right sections and scrolls there.
+  function openFromHash() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.open = true;
+    const unit = el.closest(".unit");
+    if (unit) unit.open = true;
+    el.scrollIntoView({ block: "start" });
+  }
+
+  render();
+  wirePlayers();
+  wireControls();
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
+})();
+</script>
+<!-- ARTIFACT-END -->
+</body>
+</html>
