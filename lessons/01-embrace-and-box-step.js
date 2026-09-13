@@ -29,8 +29,10 @@ PTC.addUnit({
       youtube: "om_3wXzEBXk",
       notes: "Key pointers for the embrace.",
       points: [
-        { text: "Open side: the leader's left hand and the follower's right meet palm to palm, at about shoulder height, with the leader's palm turned towards the follower's head.",
+        { text: "Open side: the leader's left hand and the follower's right meet palm to palm, with the leader's palm turned towards the follower's head.",
           image: "images/l1-open-side.jpg" },
+        { text: "The open side is held at about shoulder height.",
+          image: "images/l1-shoulder-height.jpg" },
         { text: "Closed side: the leader's right arm and the follower's left.",
           image: "images/l1-closed-side.jpg" },
         { text: "Keep the joined hands centered between the couple, not pulled towards one side or the other.",
