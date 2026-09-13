@@ -26,19 +26,22 @@
 const THEME = {
   mode: "light",              // "light" | "dark" | "auto"
 
-  accent:      "#0f6f7c",     // links, unit numbers, icons, highlights
-  accentDark:  "#5cc4cf",     //   ...same, on a dark background
+  heading:     "#660000",     // unit titles and other headers
+  headingDark: "#f0b3b3",     //   ...same, on a dark background
 
-  background:     "#f5f7f6",  // page background behind the cards
-  backgroundDark: "#131a1d",
+  accent:      "#8c1d1d",     // links, unit numbers, icons, highlights
+  accentDark:  "#e09a9a",     //   ...same, on a dark background
 
-  panel:      "#ffffff",      // card background
-  panelDark:  "#1b2428",
+  background:     "#fff4e8",  // page background behind the cards
+  backgroundDark: "#1e1614",
 
-  text:      "#1d2a30",       // main text color
-  textDark:  "#e7ecea",
+  panel:      "#fffcf7",      // card background
+  panelDark:  "#2a1f1c",
 
-  headingFont: "IBM Plex Serif",   // course title and unit titles
+  text:      "#2b211c",       // main text color
+  textDark:  "#f0e4da",
+
+  headingFont: "IBM Plex Serif",   // unit titles
   bodyFont:    "IBM Plex Sans",    // everything else
   monoFont:    "IBM Plex Mono",    // numbers, labels, durations
 
@@ -56,12 +59,11 @@ const THEME = {
    Leave youtube/drive out for a lesson with no video yet.
    ===================================================================== */
 const COURSE = {
-  eyebrow: "Class videos & materials",
+  // Browser-tab name only. The visible page heading comes from the Google Site.
   title: "PTC Class Library",
-  subtitle: "Recorded lesson clips and handouts, grouped by unit. Open a unit, then a lesson, to watch.",
   units: [
     {
-      title: "Unit 1 · Getting started",
+      title: "The Embrace and Box Step",
       summary: "The first three lessons: the embrace, the basic box, and turning it.",
       lessons: [
         {
@@ -85,6 +87,8 @@ const COURSE = {
       ]
     },
     {
+      // Remove the `hidden` line below to show this unit on the page.
+      hidden: true,
       title: "Unit 2 · Coming soon",
       summary: "More lessons will appear here as they are recorded.",
       lessons: [
@@ -96,6 +100,7 @@ const COURSE = {
       ]
     },
     {
+      hidden: true,
       title: "Extra resources",
       summary: "Reference material that is not tied to a single lesson.",
       lessons: [
@@ -117,6 +122,7 @@ const COURSE = {
   const r = document.documentElement;
   const set = (k, v) => r.style.setProperty(k, v);
   if (THEME.mode === "light" || THEME.mode === "dark") r.dataset.theme = THEME.mode;
+  set("--heading-light", THEME.heading);       set("--heading-dark", THEME.headingDark);
   set("--accent-light", THEME.accent);         set("--accent-dark", THEME.accentDark);
   set("--ground-light", THEME.background);     set("--ground-dark", THEME.backgroundDark);
   set("--panel-light", THEME.panel);           set("--panel-dark", THEME.panelDark);
@@ -136,17 +142,19 @@ const COURSE = {
 <style>
   :root {
     /* Parameters (overridden by THEME at the top of the file) */
-    --accent-light: #0f6f7c;  --accent-dark: #5cc4cf;
-    --ground-light: #f5f7f6;  --ground-dark: #131a1d;
-    --panel-light:  #ffffff;  --panel-dark:  #1b2428;
-    --ink-light:    #1d2a30;  --ink-dark:    #e7ecea;
+    --heading-light: #660000; --heading-dark: #f0b3b3;
+    --accent-light: #8c1d1d;  --accent-dark: #e09a9a;
+    --ground-light: #fff4e8;  --ground-dark: #1e1614;
+    --panel-light:  #fffcf7;  --panel-dark:  #2a1f1c;
+    --ink-light:    #2b211c;  --ink-dark:    #f0e4da;
     --radius: 10px;
     --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
     --sans: "IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
-    --focus: #f2a541;
+    --focus: #a33b00;
 
     /* Light palette, derived from the parameters */
+    --heading: var(--heading-light);
     --accent: var(--accent-light);
     --ground: var(--ground-light);
     --panel: var(--panel-light);
@@ -162,6 +170,7 @@ const COURSE = {
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
+      --heading: var(--heading-dark);
       --accent: var(--accent-dark);
       --ground: var(--ground-dark);
       --panel: var(--panel-dark);
@@ -171,12 +180,13 @@ const COURSE = {
       --ink-3: color-mix(in srgb, var(--ink) 45%, var(--panel));
       --line: color-mix(in srgb, var(--ink) 12%, var(--panel));
       --line-2: color-mix(in srgb, var(--ink) 20%, var(--panel));
-      --accent-ink: #0d1a1d;
+      --accent-ink: #1e1614;
       --accent-soft: color-mix(in srgb, var(--accent) 18%, var(--panel));
       --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .5);
     }
   }
   :root[data-theme="dark"] {
+    --heading: var(--heading-dark);
     --accent: var(--accent-dark);
     --ground: var(--ground-dark);
     --panel: var(--panel-dark);
@@ -186,7 +196,7 @@ const COURSE = {
     --ink-3: color-mix(in srgb, var(--ink) 45%, var(--panel));
     --line: color-mix(in srgb, var(--ink) 12%, var(--panel));
     --line-2: color-mix(in srgb, var(--ink) 20%, var(--panel));
-    --accent-ink: #0d1a1d;
+    --accent-ink: #1e1614;
     --accent-soft: color-mix(in srgb, var(--accent) 18%, var(--panel));
     --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .5);
   }
@@ -200,7 +210,7 @@ const COURSE = {
     font-family: var(--sans);
     font-size: 16px;
     line-height: 1.55;
-    padding-block: 28px 56px;
+    padding-block: 16px 48px;
     padding-inline: clamp(16px, 4vw, 40px);
     -webkit-font-smoothing: antialiased;
   }
@@ -210,21 +220,10 @@ const COURSE = {
 
   .wrap { max-width: 1120px; margin: 0 auto; }
 
-  /* ---------- header ---------- */
-  .head {
-    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
-    gap: 16px 32px; padding-bottom: 20px; border-bottom: 1px solid var(--line-2);
-  }
-  .head h1 {
-    font-family: var(--serif); font-weight: 600; font-size: clamp(26px, 3.2vw, 34px);
-    line-height: 1.15; margin: 0; letter-spacing: -.01em; text-wrap: balance;
-  }
-  .head .sub { margin: 6px 0 0; color: var(--ink-2); max-width: 60ch; }
-  .eyebrow {
-    font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
-    color: var(--accent); margin: 0 0 8px;
-  }
+  /* ---------- toolbar (no page title: the Google Site supplies it) ---------- */
+  .head { display: flex; justify-content: flex-end; padding-bottom: 14px; }
   .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  @media (max-width: 560px) { .head { justify-content: stretch; } .tools { width: 100%; } .search { flex: 1 1 100%; } }
   .search { position: relative; }
   .search input {
     font: inherit; font-size: 15px; color: var(--ink); background: var(--panel);
@@ -239,12 +238,15 @@ const COURSE = {
   .btn:hover { color: var(--ink); border-color: var(--ink-3); }
 
   /* ---------- layout ---------- */
-  .layout { display: grid; grid-template-columns: 220px 1fr; gap: 36px; margin-top: 28px; }
+  .layout { display: grid; grid-template-columns: 220px 1fr; gap: 36px; margin-top: 4px; }
+  /* One visible unit needs no sidebar index. */
+  .layout.solo { grid-template-columns: 1fr; }
+  .layout.solo .index { display: none; }
   @media (max-width: 760px) { .layout { grid-template-columns: 1fr; gap: 20px; } }
 
   .index { position: sticky; top: 16px; align-self: start; }
   @media (max-width: 760px) { .index { position: static; } }
-  .index h2 { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; font-weight: 500; }
+  .index h2 { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--heading); margin: 0 0 10px; font-weight: 500; opacity: .75; }
   .index ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
   .index a {
     display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: baseline;
@@ -268,10 +270,10 @@ const COURSE = {
   }
   .unit > summary::-webkit-details-marker { display: none; }
   .unit > summary .n {
-    font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--accent);
+    font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--heading);
     background: var(--accent-soft); border-radius: 6px; height: 34px; display: grid; place-items: center;
   }
-  .unit > summary h2 { font-family: var(--serif); font-weight: 600; font-size: 19px; margin: 0; line-height: 1.25; text-wrap: balance; }
+  .unit > summary h2 { font-family: var(--serif); font-weight: 600; font-size: 19px; margin: 0; line-height: 1.25; text-wrap: balance; color: var(--heading); }
   .unit > summary .meta { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
   .chev { width: 20px; height: 20px; color: var(--ink-3); transition: transform .2s ease; }
   .unit[open] > summary .chev { transform: rotate(180deg); }
@@ -309,7 +311,7 @@ const COURSE = {
   .placeholder code { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
 
   .notes { margin: 14px 0 0; color: var(--ink-2); max-width: 65ch; }
-  .side h3 { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; font-weight: 500; }
+  .side h3 { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--heading); margin: 0 0 8px; font-weight: 500; opacity: .75; }
   .materials { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   .materials a {
     display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: center; text-decoration: none; color: var(--ink);
@@ -329,11 +331,6 @@ const COURSE = {
 <body>
 <div class="wrap">
   <header class="head">
-    <div>
-      <p class="eyebrow" id="eyebrow"></p>
-      <h1 id="course-title"></h1>
-      <p class="sub" id="course-sub"></p>
-    </div>
     <div class="tools">
       <label class="search">
         <span class="sr" hidden>Search lessons</span>
@@ -345,7 +342,7 @@ const COURSE = {
     </div>
   </header>
 
-  <div class="layout">
+  <div class="layout" id="layout">
     <nav class="index" aria-label="Units">
       <h2>Units</h2>
       <ol id="index"></ol>
@@ -393,16 +390,16 @@ const COURSE = {
   }
 
   function render() {
-    $("#eyebrow").textContent = COURSE.eyebrow || "";
-    $("#course-title").textContent = COURSE.title || "";
-    $("#course-sub").textContent = COURSE.subtitle || "";
-    document.title = COURSE.title || document.title;
+    if (COURSE.title) document.title = COURSE.title;
 
     const unitsEl = $("#units");
     const indexEl = $("#index");
     let lessonCount = 0;
 
-    COURSE.units.forEach((unit, ui) => {
+    // Units marked `hidden: true` stay in the file but are not rendered.
+    const units = COURSE.units.filter(u => !u.hidden);
+
+    units.forEach((unit, ui) => {
       const uid = "u" + (ui + 1) + "-" + slug(unit.title);
       const n = String(ui + 1).padStart(2, "0");
 
@@ -444,7 +441,9 @@ const COURSE = {
     });
 
     unitsEl.insertAdjacentHTML("beforeend", '<div class="no-results" id="no-results" hidden>No lessons match that search.</div>');
-    $("#count").textContent = COURSE.units.length + " units · " + lessonCount + " lessons";
+    $("#count").textContent = units.length + (units.length === 1 ? " unit · " : " units · ") +
+      lessonCount + (lessonCount === 1 ? " lesson" : " lessons");
+    if (units.length < 2) $("#layout").classList.add("solo");
   }
 
   // Load a video only when its lesson is opened; unload when closed so many open tabs stay light.

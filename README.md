@@ -9,6 +9,7 @@ A single-file page (`index.html`) that shows class videos and materials in colla
 ## What the page does
 
 - **Units** are collapsible cards. **Lessons** inside them are collapsible rows.
+- There is no page title on the embed. The Google Site supplies the heading above it.
 - Each lesson holds one video (YouTube or Google Drive), optional notes, and a list of materials (slides, docs, PDFs, links).
 - Videos load only when a lesson is opened, so a page with 100 clips stays fast.
 - Search box filters lessons by title, notes, and material names.
@@ -29,18 +30,18 @@ Open `index.html`. The `COURSE` block near the top of the file (right after `THE
 
 ```js
 {
-  title: "Unit 1 · Foundations",
+  title: "The Embrace and Box Step",
   summary: "One sentence about the unit.",
   lessons: [
     {
-      title: "Lesson 1.1 · Key terms",
+      title: "Lesson 1 · Embrace",
       date: "2026-09-10",        // optional, YYYY-MM-DD
       duration: "14:05",         // optional, shown at right
-      youtube: "abc123XYZ",      // OR  drive: "FILE_ID"
+      youtube: "om_3wXzEBXk",    // OR  drive: "FILE_ID"
       notes: "What this clip covers.",
       materials: [
-        { label: "Lesson 1.1 slides", kind: "slides", url: "https://..." },
-        { label: "Worksheet",        kind: "pdf",    url: "https://..." }
+        { label: "Lesson 1 slides", kind: "slides", url: "https://..." },
+        { label: "Worksheet",       kind: "pdf",    url: "https://..." }
       ]
     }
   ]
@@ -52,6 +53,8 @@ Open `index.html`. The `COURSE` block near the top of the file (right after `THE
 - `kind` can be `slides`, `doc`, `sheet`, `pdf`, `video`, or `link`. It only changes the icon.
 - Leave `youtube`/`drive` out for a lesson with no video (materials only).
 - A lesson with no `youtube`/`drive` line shows a "No video for this lesson" box instead of a broken player.
+- **To hide a unit without deleting it**, add `hidden: true` as its first line. "Unit 2" and "Extra resources" are hidden this way right now; delete that one line to bring either back.
+- The sidebar unit index appears automatically once two or more units are visible.
 
 ## Step 3 — Change colors and fonts
 
@@ -61,15 +64,17 @@ The `THEME` block at the top of `index.html` controls the look. Change a value, 
 const THEME = {
   mode: "light",              // "light" | "dark" | "auto" (follow the viewer's device)
 
-  accent:      "#0f6f7c",     // links, unit numbers, icons
-  accentDark:  "#5cc4cf",     //   ...on a dark background
+  heading:     "#660000",     // unit titles and other headers
+  headingDark: "#f0b3b3",     //   ...on a dark background
+  accent:      "#8c1d1d",     // links, unit numbers, icons
+  accentDark:  "#e09a9a",
 
-  background:     "#f5f7f6",  // page background behind the cards
-  backgroundDark: "#131a1d",
-  panel:      "#ffffff",      // card background
-  panelDark:  "#1b2428",
-  text:      "#1d2a30",       // main text color
-  textDark:  "#e7ecea",
+  background:     "#fff4e8",  // page background behind the cards
+  backgroundDark: "#1e1614",
+  panel:      "#fffcf7",      // card background
+  panelDark:  "#2a1f1c",
+  text:      "#2b211c",       // main text color
+  textDark:  "#f0e4da",
 
   headingFont: "IBM Plex Serif",   // any Google Fonts family name
   bodyFont:    "IBM Plex Sans",
@@ -79,8 +84,8 @@ const THEME = {
 };
 ```
 
-- Secondary greys (borders, muted text, hover fills) are mixed automatically from `text` and `panel`, so you only set four colors per mode.
-- To match the Google Site, set `accent` to the site's theme color and `background` to the site's section background.
+- Secondary tones (borders, muted text, hover fills) are mixed automatically from `text` and `panel`, so you only set five colors per mode.
+- To match the Google Site, set `background` to the site's section background so the embed has no visible seam.
 - Fonts are loaded from Google Fonts by name. Browse fonts.google.com and paste the family name exactly, e.g. `"Lora"` or `"Nunito Sans"`.
 - `mode: "light"` is the safe choice for an embed in a light Google Site. Use `"auto"` only if the surrounding site also switches with the viewer's device.
 
