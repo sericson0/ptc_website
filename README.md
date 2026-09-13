@@ -78,18 +78,20 @@ Open the file in `lessons/` for the group you are working on. A lesson looks lik
 - Leave out anything you do not want: no `notes` line means no paragraph, `points: []` means no bullet list, no `youtube`/`drive` means a "No video for this lesson" box instead of a broken player.
 - `kind` can be `slides`, `doc`, `sheet`, `pdf`, `video`, or `link`. It only changes the icon.
 
-### Pictures beside the key points
+### Pictures on the key points
 
-A bullet in `points` or `practice` is either plain text, or an object that also carries a still from the clip. The still sits at the right of that bullet:
+A bullet in `points` or `practice` is either plain text, or an object that also carries a still from the clip:
 
 ```js
 points: [
   "A plain bullet, with no picture",
-  { text: "A bullet with a picture beside it", image: "images/l1-w-shape.jpg" }
+  { text: "A bullet with a picture", image: "images/l1-w-shape.jpg" }
 ]
 ```
 
-The stills live in [images/](images/) and are 420px-wide JPEGs, shown at 175px (they stack under the text on a phone). To cut a new one, pick the moment in the video and use ffmpeg:
+Once any bullet in a list has a picture, that list stops being a bullet list and becomes a **row of cards** — picture on top, note underneath. It fits three across on a computer, two on a tablet and one on a phone, on its own, so a list of six lands as two tidy rows of three.
+
+The stills live in [images/](images/). To cut a new one, pick the moment in the video and use ffmpeg:
 
 ```sh
 # -ss is the timestamp; crop is WIDTH:HEIGHT:X:Y measured from the top-left
@@ -97,7 +99,20 @@ ffmpeg -ss 66 -i "L1 Embrace.mp4" -frames:v 1 \
   -vf "crop=400:300:370:45,scale=420:-1" -q:v 5 images/my-still.jpg
 ```
 
-Crop tightly around the dancers, keeping a 4:3 shape so every still is the same size on the page. A whole 16:9 frame shrunk to 175px leaves the dancers too small to read. Drop the `crop=...,` part to keep the full frame.
+Crop tightly around the dancers, keeping a 4:3 shape so every still is the same size on the page. A whole 16:9 frame leaves the dancers too small to read once it is one card among three. Drop the `crop=...,` part to keep the full frame.
+
+### Splitting the points into named groups
+
+When one lesson's points fall into groups, use `sections` in place of `points`. Each section gets its own heading and its own row of cards. Lesson 1 uses this to separate the open side of the embrace from the closed side:
+
+```js
+sections: [
+  { title: "Open side",   points: [ ... ] },
+  { title: "Closed side", points: [ ... ] }
+]
+```
+
+A lesson can use `points` or `sections` or both; anything you leave out is simply not drawn.
 
 The existing stills carry no `alt` text, because each one sits right next to the bullet that describes it and a screen reader would otherwise read the same thing twice. Add `alt: "..."` to a bullet if its picture shows something the words do not.
 

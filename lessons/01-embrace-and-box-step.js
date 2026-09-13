@@ -3,8 +3,6 @@
    ---------------------------------------------------------------------
    The points and practice bullets below were pulled from the audio of the
    three clips, so edit or cut any that do not say what you want them to.
-   A lesson draws only the parts you give it: no `notes` means no
-   paragraph, an empty `points: []` means no bullet list, and so on.
 
    Shape of a lesson:
      title     shown on the collapsed row
@@ -16,6 +14,8 @@
      points    bullets under the heading "Key points". A bullet is either
                plain text, or { text, image } to stand a still from the
                clip beside it.
+     sections  use instead of `points` when the points fall into named
+               groups: [{ title: "...", points: [...] }, ...]
      practice  bullets under the heading "Practice"
      materials links: { label, kind, url }
                kind = slides | doc | sheet | pdf | video | link
@@ -28,23 +28,33 @@ PTC.addUnit({
       title: "Lesson 1 · Embrace",
       youtube: "om_3wXzEBXk",
       notes: "Key pointers for the embrace.",
-      points: [
-        { text: "Open side: the leader's left hand and the follower's right meet palm to palm, with the leader's palm turned towards the follower's head.",
-          image: "images/l1-open-side.jpg" },
-        { text: "The open side is held at about shoulder height.",
-          image: "images/l1-shoulder-height.jpg" },
-        { text: "Closed side: the leader's right arm and the follower's left.",
-          image: "images/l1-closed-side.jpg" },
-        { text: "Keep the joined hands centered between the couple, not pulled towards one side or the other.",
-          image: "images/l1-hands-centered.jpg" },
-        { text: "Wrists and elbows stay in one line. Do not crook the wrists in either direction.",
-          image: "images/l1-wrists-elbows.jpg" },
-        { text: "Picture the arms of the open side as a W: elbows below the shoulders, hands meeting at shoulder height.",
-          image: "images/l1-w-shape.jpg" },
-        { text: "Two embraces in tango. In close embrace the bodies touch; in open embrace the spines stay a little apart, which gives the feet more space.",
-          image: "images/l1-open-vs-close.jpg" },
-        { text: "In the open embrace the leader's right hand goes on the follower's shoulder blade, and the follower's left hand on the leader's tricep.",
-          image: "images/l1-hand-placement.jpg" }
+      sections: [
+        {
+          title: "Open side",
+          points: [
+            { text: "The leader's left hand and the follower's right meet palm to palm, with the leader's palm turned towards the follower's head.",
+              image: "images/l1-open-side.jpg" },
+            { text: "The open side is held at about shoulder height.",
+              image: "images/l1-shoulder-height.jpg" },
+            { text: "Keep the joined hands centered between the couple, not pulled towards one side or the other.",
+              image: "images/l1-hands-centered.jpg" },
+            { text: "Wrists and elbows stay in one line. Do not crook the wrists in either direction.",
+              image: "images/l1-wrists-elbows.jpg" },
+            { text: "Picture the arms as a W: elbows below the shoulders, hands meeting at shoulder height.",
+              image: "images/l1-w-shape.jpg" }
+          ]
+        },
+        {
+          title: "Closed side",
+          points: [
+            { text: "The closed side is the leader's right arm and the follower's left.",
+              image: "images/l1-closed-side.jpg" },
+            { text: "The leader's right hand goes on the follower's shoulder blade, and the follower's left hand on the leader's tricep.",
+              image: "images/l1-hand-placement.jpg" },
+            { text: "Two embraces in tango. In close embrace the bodies touch; in open embrace the spines stay a little apart, which gives the feet more space.",
+              image: "images/l1-open-vs-close.jpg" }
+          ]
+        }
       ],
       practice: [
         "Starting out in tango, dance in the open embrace and work towards the close embrace."
@@ -54,20 +64,23 @@ PTC.addUnit({
     {
       title: "Lesson 2 · The box step",
       youtube: "vVXi_a_QcLw",
-      notes: "The steps of the basic box, a useful sequence of six steps for tango.",
+      notes: [
+        "The steps of the basic box, a useful sequence of six steps for tango.",
+        "Begin with the weight on the left leg for leaders, the right for followers."
+      ],
       points: [
-        { text: "The six steps: back 1, side 2, forward outside partner 3, forward 4, side 5, change weight 6.",
-          image: "images/l2-six-steps.jpg" },
-        { text: "Begin with the weight on the left leg for leaders, the right for followers.",
-          image: "images/l2-starting-weight.jpg" },
-        { text: "The first step is back for the leader (back right) and forward for the follower (forward left).",
-          image: "images/l2-first-step-back.jpg" },
-        { text: "Outside partner on step 3 means both of the leader's feet are to one side of both of the follower's feet, with a line between the two, rather than staggered.",
-          image: "images/l2-outside-partner.jpg" },
-        { text: "Step 4 goes forward again, back inside partner.",
-          image: "images/l2-inside-partner.jpg" },
-        { text: "The last step brings the feet together and changes weight, ready to start again.",
-          image: "images/l2-change-weight.jpg" }
+        { text: "Step 1, back. Back right for the leader, forward left for the follower.",
+          image: "images/l2-step-1-back.jpg" },
+        { text: "Step 2, side.",
+          image: "images/l2-step-2-side.jpg" },
+        { text: "Step 3, forward and outside partner: both of the leader's feet are to one side of both of the follower's feet, with a line between the two, rather than staggered.",
+          image: "images/l2-step-3-forward-outside.jpg" },
+        { text: "Step 4, forward again, back inside partner.",
+          image: "images/l2-step-4-forward-inside.jpg" },
+        { text: "Step 5, side.",
+          image: "images/l2-step-5-side.jpg" },
+        { text: "Step 6, change weight. The feet come together and the weight goes back to the left foot for the leader, the right for the follower, ready to start again.",
+          image: "images/l2-step-6-change-weight.jpg" }
       ],
       practice: [
         "Walk the six counts on your own: back, side, forward, forward, side, together and change weight."
@@ -85,7 +98,9 @@ PTC.addUnit({
           image: "images/l3-diagonal-cross.jpg" },
         { text: "Trick two, the step around: on the side step the follower takes a larger step around the leader.",
           image: "images/l3-step-around.jpg" },
-        { text: "The second half uses the same two tricks with the roles reversed, so the leader crosses diagonally and then takes the larger step around.",
+        { text: "In the second half the roles reverse, and it is the leader who crosses diagonally, in front of the follower.",
+          image: "images/l3-leader-crosses.jpg" },
+        { text: "The leader then takes the larger step around on the side step, finishing the turn.",
           image: "images/l3-second-half.jpg" }
       ],
       practice: [

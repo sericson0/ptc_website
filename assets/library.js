@@ -102,8 +102,9 @@
       const shot = r.image
         ? '<img class="shot" src="' + esc(r.image) + '" alt="' + esc(r.alt || "") + '" loading="lazy" decoding="async">'
         : "";
-      return '<li' + (shot ? ' class="has-shot"' : "") + '><div class="pt"><span>' +
-        esc(r.text) + '</span>' + shot + '</div></li>';
+      // Picture first: with stills the list is drawn as cards, image on top.
+      return '<li' + (shot ? ' class="has-shot"' : "") + '><div class="pt">' + shot +
+        '<span>' + esc(r.text) + '</span></div></li>';
     });
     const withShots = rows.some(r => r && r.image);
     return '<div class="block' + (withShots ? " with-shots" : "") + '">' +
@@ -111,10 +112,12 @@
       '<ul class="points">' + cells.join("") + '</ul></div>';
   }
 
-  // Everything written under the video: notes first, then the bullet lists.
+  // Everything written under the video: notes, then the bullet lists.
+  // `sections` is for a lesson whose points fall into named groups.
   function writeup(lesson) {
     return list(lesson.notes).map(p => '<p class="notes">' + esc(p) + '</p>').join("") +
       bullets("Key points", lesson.points) +
+      list(lesson.sections).map(s => bullets(s.title, s.points)).join("") +
       bullets("Practice", lesson.practice);
   }
 
@@ -130,6 +133,7 @@
   function haystack(lesson) {
     return [lesson.title, ...list(lesson.notes),
       ...list(lesson.points).map(textOf), ...list(lesson.practice).map(textOf),
+      ...list(lesson.sections).flatMap(s => [s.title, ...list(s.points).map(textOf)]),
       ...list(lesson.materials).map(m => m.label)].join(" ").toLowerCase();
   }
 

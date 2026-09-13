@@ -29,13 +29,21 @@ PTC.addUnit({
 
       notes: "A sentence or two under the video.",
 
-      points: [                // bullets under the heading "Key points"
+      // Bullets under the heading "Key points". Once any of them has a
+      // picture the list is drawn as a row of cards instead: picture on
+      // top, note underneath, three across on a computer.
+      points: [
         "A plain bullet, with no picture",
-
-        // Give a bullet a still from the clip and it shows at its right:
-        { text: "A bullet with a picture beside it",
+        { text: "A bullet with a picture",
           image: "images/my-still.jpg" }
       ],
+
+      // When the points fall into groups, use `sections` in place of
+      // `points`. Each one gets its own heading and its own row of cards.
+      // sections: [
+      //   { title: "First group",  points: [ ... ] },
+      //   { title: "Second group", points: [ ... ] }
+      // ],
 
       practice: [              // bullets under the heading "Practice"
         "What to drill before the next class"

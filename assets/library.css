@@ -173,6 +173,8 @@ a { color: var(--accent); }
 .lesson .body.solo .watch,
 .lesson .body.solo .notes,
 .lesson .body.solo .block { max-width: 760px; }
+/* A card grid earns more room than a column of prose. */
+.lesson .body.solo .block.with-shots { max-width: 940px; }
 @media (max-width: 860px) { .lesson .body { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .lesson > summary, .lesson .body { padding-left: 14px; } }
 
@@ -214,20 +216,21 @@ a { color: var(--accent); }
 .points li:last-child { margin-bottom: 0; }
 .points li::marker { color: var(--accent); }
 
-/* A bullet can carry a still from the clip. The grid lives inside the li,
-   not on it, so the li stays a list-item and keeps its marker. */
-.block.with-shots { max-width: 820px; }
-.points li.has-shot { margin-bottom: 10px; }
-.points li.has-shot .pt {
-  display: grid; grid-template-columns: minmax(0, 1fr) 175px; gap: 18px; align-items: start;
+/* A bullet can carry a still from the clip. Once a list has stills it stops
+   being a bullet list and becomes a row of cards: picture on top, note under
+   it, wrapping to as many columns as the width allows. */
+.block.with-shots { max-width: 940px; }
+.block.with-shots .points {
+  list-style: none; padding-left: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 26px 22px;
 }
+.block.with-shots .points li { margin: 0; }
 .points .shot {
-  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; margin-bottom: 9px;
   border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2);
 }
-@media (max-width: 700px) {
-  .points li.has-shot .pt { grid-template-columns: minmax(0, 1fr); gap: 8px; }
-  .points .shot { max-width: 280px; }
+@media (max-width: 560px) {
+  .block.with-shots .points { gap: 20px; }
 }
 .materials { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .materials a {
