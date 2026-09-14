@@ -147,6 +147,9 @@ a { color: var(--accent); }
 .unit > summary .sub { font-size: 14.5px; color: var(--ink-2); margin-top: 3px; text-wrap: pretty; }
 .chev { width: 20px; height: 20px; color: var(--ink-3); transition: transform .2s ease; }
 .unit[open] > summary .chev { transform: rotate(180deg); }
+.lesson > summary .chev { width: 17px; height: 17px; }
+.lesson[open] > summary .chev { transform: rotate(180deg); }
+.lesson > summary:hover .chev { color: var(--ink-2); }
 @media (max-width: 560px) {
   .unit > summary { grid-template-columns: 30px 1fr auto; gap: 10px; padding: 14px; }
   .unit > summary .n { height: 30px; }
@@ -157,7 +160,7 @@ a { color: var(--accent); }
 .lesson { border-bottom: 1px solid var(--line); }
 .lesson:last-child { border-bottom: 0; }
 .lesson > summary {
-  list-style: none; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
+  list-style: none; cursor: pointer; display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center;
   padding: 12px 18px 12px 66px; font-size: 15px;
 }
 .lesson > summary::-webkit-details-marker { display: none; }

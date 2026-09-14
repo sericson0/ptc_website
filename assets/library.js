@@ -158,7 +158,8 @@
     return '<li><details class="lesson" id="' + lid + '" data-search="' + esc(haystack(lesson)) + '">' +
       '<summary><div><div class="t">' + esc(lesson.title) + '</div>' +
       (dateStr ? '<div class="d">' + dateStr + '</div>' : "") + '</div>' +
-      '<span class="dur">' + esc(lesson.duration || "") + '</span></summary>' +
+      (lesson.duration ? '<span class="dur">' + esc(lesson.duration) + '</span>' : "") +
+      ICONS.chev + '</summary>' +
       '<div class="body' + (mats ? "" : " solo") + '">' +
         '<div class="main">' +
           '<div class="media">' +
