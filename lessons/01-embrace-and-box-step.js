@@ -116,7 +116,8 @@ PTC.addUnit({
           image: "images/l3-second-half.jpg" }
       ],
       practice: [
-        "Know the box step first. Lesson 2 walks through the six steps."
+        "Practice implementing the two tricks in the box step.",
+        "Try linking two sets of box steps all going in the same direction."
       ],
       materials: []
     }
