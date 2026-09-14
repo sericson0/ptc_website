@@ -114,6 +114,27 @@ sections: [
 
 A lesson can use `points` or `sections` or both; anything you leave out is simply not drawn.
 
+### Renaming a heading
+
+The two standing headings are "Key points" and "Practice". Rename either one on a lesson:
+
+```js
+pointsTitle: "Steps",        // Lesson 2 uses this
+practiceTitle: "Homework",
+```
+
+A `sections` group always carries its own `title`, so it needs no rename.
+
+### Bold
+
+Wrap anything in two asterisks to bold it, in a note or in a bullet:
+
+```js
+"**Begin with the weight on the left leg for leaders**, the right for followers."
+```
+
+It works mid-sentence, and the search box still matches across it.
+
 The existing stills carry no `alt` text, because each one sits right next to the bullet that describes it and a screen reader would otherwise read the same thing twice. Add `alt: "..."` to a bullet if its picture shows something the words do not.
 
 ### The still image before you press play

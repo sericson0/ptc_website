@@ -25,6 +25,14 @@
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   const isPlaceholder = id => !id || /^PASTE_/i.test(id);
+
+  // Any note or bullet can carry **bold** the way it is written in chat.
+  // The text is escaped first and only then are the asterisks turned into
+  // tags, so no markup can ever arrive from a lesson file by accident.
+  const rich = s => esc(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  // The same text with the asterisks simply removed, for the search index:
+  // searching "left leg" should still find "the **left** leg".
+  const plain = s => String(s ?? "").replace(/\*\*([^*]+)\*\*/g, "$1");
   const list = v => (v == null ? [] : Array.isArray(v) ? v : [v]).filter(x => x !== "" && x != null);
 
   const ICONS = {
@@ -104,7 +112,7 @@
         : "";
       // Picture first: with stills the list is drawn as cards, image on top.
       return '<li' + (shot ? ' class="has-shot"' : "") + '><div class="pt">' + shot +
-        '<span>' + esc(r.text) + '</span></div></li>';
+        '<span>' + rich(r.text) + '</span></div></li>';
     });
     const withShots = rows.some(r => r && r.image);
     return '<div class="block' + (withShots ? " with-shots" : "") + '">' +
@@ -113,12 +121,13 @@
   }
 
   // Everything written under the video: notes, then the bullet lists.
-  // `sections` is for a lesson whose points fall into named groups.
+  // `sections` is for a lesson whose points fall into named groups, and
+  // pointsTitle / practiceTitle rename the two standing headings.
   function writeup(lesson) {
-    return list(lesson.notes).map(p => '<p class="notes">' + esc(p) + '</p>').join("") +
-      bullets("Key points", lesson.points) +
+    return list(lesson.notes).map(p => '<p class="notes">' + rich(p) + '</p>').join("") +
+      bullets(lesson.pointsTitle || "Key points", lesson.points) +
       list(lesson.sections).map(s => bullets(s.title, s.points)).join("") +
-      bullets("Practice", lesson.practice);
+      bullets(lesson.practiceTitle || "Practice", lesson.practice);
   }
 
   function materials(lesson) {
@@ -134,7 +143,7 @@
     return [lesson.title, ...list(lesson.notes),
       ...list(lesson.points).map(textOf), ...list(lesson.practice).map(textOf),
       ...list(lesson.sections).flatMap(s => [s.title, ...list(s.points).map(textOf)]),
-      ...list(lesson.materials).map(m => m.label)].join(" ").toLowerCase();
+      ...list(lesson.materials).map(m => m.label)].map(plain).join(" ").toLowerCase();
   }
 
   function lessonHtml(lesson, lid) {

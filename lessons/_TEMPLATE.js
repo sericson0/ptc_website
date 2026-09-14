@@ -27,7 +27,12 @@ PTC.addUnit({
                                    // lesson. Without it, YouTube's thumbnail
                                    // is used; a Drive video has none.
 
-      notes: "A sentence or two under the video.",
+      // Wrap anything in two asterisks to bold it, here or in a bullet.
+      notes: "A sentence or two under the video. **This part is bold.**",
+
+      // pointsTitle: "Steps",        // renames the "Key points" heading
+      // practiceTitle: "Homework",   // renames the "Practice" heading
+
 
       // Bullets under the heading "Key points". Once any of them has a
       // picture the list is drawn as a row of cards instead: picture on

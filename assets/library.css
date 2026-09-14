@@ -206,6 +206,8 @@ a { color: var(--accent); }
 /* ---------- notes and bullet points under the video ---------- */
 .notes { margin: 14px 0 0; color: var(--ink-2); max-width: 65ch; }
 .notes + .notes { margin-top: 8px; }
+/* **bold** in a note or bullet, lifted to full contrast so it carries. */
+.notes strong, .points strong { color: var(--ink); font-weight: 600; }
 .block { margin: 16px 0 0; max-width: 65ch; }
 .block-title, .side h3 {
   font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;

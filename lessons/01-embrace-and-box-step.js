@@ -12,13 +12,18 @@
      drive     use instead of youtube for a Google Drive file ID
      notes     a sentence or two under the video (or a list of them)
      points    bullets under the heading "Key points". A bullet is either
-               plain text, or { text, image } to stand a still from the
-               clip beside it.
+               plain text, or { text, image } to put a still from the clip
+               above it. Once any bullet has a picture the whole list is
+               drawn as a row of cards.
      sections  use instead of `points` when the points fall into named
                groups: [{ title: "...", points: [...] }, ...]
      practice  bullets under the heading "Practice"
+     pointsTitle / practiceTitle
+               rename those two headings, e.g. pointsTitle: "Steps"
      materials links: { label, kind, url }
                kind = slides | doc | sheet | pdf | video | link
+
+   Any note or bullet can carry **bold** by wrapping it in two asterisks.
    ===================================================================== */
 PTC.addUnit({
   title: "The Embrace and Box Step",
@@ -34,9 +39,9 @@ PTC.addUnit({
           points: [
             { text: "The leader's left hand and the follower's right meet palm to palm, with the leader's palm turned towards the follower's head.",
               image: "images/l1-open-side.jpg" },
-            { text: "The open side is held at about shoulder height.",
+            { text: "Hands held around shoulder height.",
               image: "images/l1-shoulder-height.jpg" },
-            { text: "Keep the joined hands centered between the couple, not pulled towards one side or the other.",
+            { text: "Keep hands centered between the couple, not pulled towards one side or the other.",
               image: "images/l1-hands-centered.jpg" },
             { text: "Wrists and elbows stay in one line. Do not crook the wrists in either direction.",
               image: "images/l1-wrists-elbows.jpg" },
@@ -47,17 +52,18 @@ PTC.addUnit({
         {
           title: "Closed side",
           points: [
-            { text: "The closed side is the leader's right arm and the follower's left.",
+            { text: "There are two types of embrace in tango. In close embrace the bodies touch; in open embrace there is space between the couple.",
+              image: "images/l1-open-vs-close.jpg" },
+            { text: "The closed side of the embrace is the leader's right arm and the follower's left.",
               image: "images/l1-closed-side.jpg" },
-            { text: "The leader's right hand goes on the follower's shoulder blade, and the follower's left hand on the leader's tricep.",
+            { text: "In open embrace, the leader's right hand goes on the follower's shoulder blade, and the follower's left hand on the leader's tricep.",
               image: "images/l1-hand-placement.jpg" },
-            { text: "Two embraces in tango. In close embrace the bodies touch; in open embrace the spines stay a little apart, which gives the feet more space.",
-              image: "images/l1-open-vs-close.jpg" }
           ]
         }
       ],
       practice: [
-        "Starting out in tango, dance in the open embrace and work towards the close embrace."
+        "Practice taking the embrace focusing on each of the points above. Take them one at a time",
+        "For more advanced dancers, try the same but in a close embrace."
       ],
       materials: []
     },
@@ -66,24 +72,30 @@ PTC.addUnit({
       youtube: "vVXi_a_QcLw",
       notes: [
         "The steps of the basic box, a useful sequence of six steps for tango.",
-        "Begin with the weight on the left leg for leaders, the right for followers."
+        "Leader steps are: (1) back, (2) side, (3) forward, (4) forward, (5) side, (6) together",
+        "**Begin with the weight on the left leg for leaders, the right for followers.**"
       ],
+      pointsTitle: "Steps",
       points: [
         { text: "Step 1, back. Back right for the leader, forward left for the follower.",
           image: "images/l2-step-1-back.jpg" },
-        { text: "Step 2, side.",
+        { text: "Step 2, side left for leaders, right for the follower.",
           image: "images/l2-step-2-side.jpg" },
-        { text: "Step 3, forward and outside partner: both of the leader's feet are to one side of both of the follower's feet, with a line between the two, rather than staggered.",
+        { text: "Step 3, forward and outside partner: both feet are to one side of your partner's feet, such that a line could separate the two.",
           image: "images/l2-step-3-forward-outside.jpg" },
         { text: "Step 4, forward again, back inside partner.",
           image: "images/l2-step-4-forward-inside.jpg" },
-        { text: "Step 5, side.",
+        { text: "Step 5, side right for leader, left for the follower.",
           image: "images/l2-step-5-side.jpg" },
-        { text: "Step 6, change weight. The feet come together and the weight goes back to the left foot for the leader, the right for the follower, ready to start again.",
+        { text: "Step 6, change weight. The feet come together and the weight goes back to the left foot for the leader, right for follower, ready to start again.",
           image: "images/l2-step-6-change-weight.jpg" }
       ],
       practice: [
-        "Walk the six counts on your own: back, side, forward, forward, side, together and change weight."
+        "Walk the six counts on your own: back, side, forward, forward, side, together and change weight.",
+        "Repeat the box steps with a partner.",
+        "Try the box to music, with one step per strong beat.",
+        "Integrate the box into the rest of your dance.",
+
       ],
       materials: []
     },
