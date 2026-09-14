@@ -205,9 +205,36 @@ const THEME = {
 
 The page is hosted by GitHub Pages at the live address above (repo **Settings → Pages**, deploying from `main`, root folder).
 
-1. In the Sites editor: **Insert → Embed → By URL**, paste the live address, choose **Whole page**, Insert.
-2. Drag the block's corner handle to make it tall. Google Sites embeds have a fixed height; content taller than the block scrolls inside it. A good starting size is the height of the page with one unit open.
-3. **Publish** the site.
+**The quick way, no code.** In the Sites editor: **Insert → Embed → By URL**, paste `https://sericson0.github.io/ptc_website/`, choose **Whole page**, Insert. Drag the block's corner handle to make it tall, then **Publish**.
+
+**The way that gives you an exact height.** **Insert → Embed → Embed code**, paste this, Next, Insert:
+
+```html
+<iframe src="https://sericson0.github.io/ptc_website/"
+        title="PTC Class Library"
+        width="100%" height="900"
+        style="border:0; display:block;"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        allowfullscreen></iframe>
+```
+
+Keep the `allow` line. The YouTube player sits in an iframe *inside* this page, so from the Sites page it is two frames deep, and each frame has to pass those permissions down or pressing play and going fullscreen misbehave.
+
+### How tall to make the block
+
+Google Sites blocks are a fixed height and there is no auto-resizing for an embed from another domain, so anything taller than the block scrolls inside it. Measured at a typical Sites width:
+
+| State | Page height |
+| --- | --- |
+| All lessons shut | ~750px |
+| One lesson open | ~2100–3000px |
+| Everything open | ~4900–6700px |
+
+Nothing sensible shows a whole open lesson without scrolling, so pick a height that looks right shut and let people scroll inside it — **800–900px** is a good starting point. Drag the block as wide as the layout allows too: at full width the key-point cards sit three across, and the same lesson is about a third shorter than it is at two across.
+
+### Matching the site's background
+
+The page paints its own cream background (`#fff4e8`), so on a white Sites page the embed reads as a visible rectangle. To lose the seam, set `background` in [assets/theme.js](assets/theme.js) to whatever the Sites section behind it uses, then commit and push.
 
 ### One embed block per group
 
