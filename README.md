@@ -31,7 +31,7 @@ Day to day you only open a file in `lessons/`. Each one is a single `PTC.addUnit
 - Each lesson holds one video (YouTube or Google Drive), notes, two bullet lists, and a list of materials (slides, docs, PDFs, links). Anything you leave out simply is not drawn.
 - Each lesson shows its video thumbnail. Pressing play swaps in the real player, so a long page loads one image per lesson instead of a dozen live video frames. Closing a lesson stops playback.
 - Every video also carries a "Watch on YouTube" link, in case an embed is blocked on a school or work network.
-- A lesson with no materials gives its full width to the video.
+- A lesson with no materials gives its room to the video, with the notes beside it on a wide screen.
 - Search box filters lessons by title, notes, bullet points, and material names.
 - "Expand all" / "Collapse all" buttons, a sticky unit index, and shareable links to any unit or lesson (`#u1-the-embrace-and-box-step-l3`).
 - Works at phone width.
@@ -73,7 +73,6 @@ Open the file in `lessons/` for the group you are working on. A lesson looks lik
 }
 ```
 
-- The three real lessons ship with **`TODO:` placeholder text** in `notes`, `points`, and `practice`. That text is visible on the live page until you replace it — search the `lessons/` folder for `TODO:` to find every spot.
 - To add a lesson, copy one `{ ... }` block and paste it after another inside the same `lessons: [ ... ]` list. Keep the comma between blocks.
 - Leave out anything you do not want: no `notes` line means no paragraph, `points: []` means no bullet list, no `youtube`/`drive` means a "No video for this lesson" box instead of a broken player.
 - `kind` can be `slides`, `doc`, `sheet`, `pdf`, `video`, or `link`. It only changes the icon.
@@ -89,7 +88,7 @@ points: [
 ]
 ```
 
-Once any bullet in a list has a picture, that list stops being a bullet list and becomes a **row of cards** — picture on top, note underneath. It fits three across on a computer, two on a tablet and one on a phone, on its own, so a list of six lands as two tidy rows of three.
+Once any bullet in a list has a picture, that list stops being a bullet list and becomes a **row of cards** — picture on top, note underneath. It lays itself out on its own: four across on a wide screen, down to three, two and finally one on a phone.
 
 The stills live in [images/](images/). To cut a new one, pick the moment in the video and use ffmpeg:
 
@@ -99,7 +98,9 @@ ffmpeg -ss 66 -i "L1 Embrace.mp4" -frames:v 1 \
   -vf "crop=400:300:370:45,scale=420:-1" -q:v 5 images/my-still.jpg
 ```
 
-Crop tightly around the dancers, keeping a 4:3 shape so every still is the same size on the page. A whole 16:9 frame leaves the dancers too small to read once it is one card among three. Drop the `crop=...,` part to keep the full frame.
+Crop tightly around the dancers, keeping a 4:3 shape so every still is the same size on the page. A whole 16:9 frame leaves the dancers too small to read once it is one card among four. Drop the `crop=...,` part to keep the full frame.
+
+The existing stills carry no `alt` text, because each one sits right next to the bullet that describes it and a screen reader would otherwise read the same thing twice. Add `alt: "..."` to a bullet if its picture shows something the words do not.
 
 ### Splitting the points into named groups
 
@@ -134,8 +135,6 @@ Wrap anything in two asterisks to bold it, in a note or in a bullet:
 ```
 
 It works mid-sentence, and the search box still matches across it.
-
-The existing stills carry no `alt` text, because each one sits right next to the bullet that describes it and a screen reader would otherwise read the same thing twice. Add `alt: "..."` to a bullet if its picture shows something the words do not.
 
 ### The still image before you press play
 
