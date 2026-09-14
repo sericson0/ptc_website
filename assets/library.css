@@ -140,14 +140,15 @@ a { color: var(--accent); }
   background: var(--accent-soft); border-radius: 6px; height: 34px; display: grid; place-items: center;
 }
 .unit > summary h2 { font-family: var(--serif); font-weight: 600; font-size: 19px; margin: 0; line-height: 1.25; text-wrap: balance; color: var(--heading); }
-.unit > summary .meta { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+/* The unit's one-line description, sitting under its title. It gets the
+   full width of the header rather than a prose measure, so it can run on
+   for a good while before wrapping. */
+.unit > summary .sub { font-size: 14.5px; color: var(--ink-2); margin-top: 3px; text-wrap: pretty; }
 .chev { width: 20px; height: 20px; color: var(--ink-3); transition: transform .2s ease; }
 .unit[open] > summary .chev { transform: rotate(180deg); }
-.unit .summary-text { margin: 0; padding: 0 18px 14px 66px; color: var(--ink-2); max-width: 68ch; }
 @media (max-width: 560px) {
   .unit > summary { grid-template-columns: 30px 1fr auto; gap: 10px; padding: 14px; }
   .unit > summary .n { height: 30px; }
-  .unit .summary-text { padding-left: 14px; }
 }
 
 /* ---------- lessons ---------- */

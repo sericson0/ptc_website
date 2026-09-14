@@ -210,11 +210,13 @@
         return lessonHtml(lesson, uid + "-l" + (li + 1));
       }).join("");
 
+      // The summary rides in the header as a subtitle, so it is readable
+      // whether the unit is open or shut.
       unitsEl.insertAdjacentHTML("beforeend",
         '<details class="unit" id="' + uid + '"' + (ui === 0 ? " open" : "") + '>' +
           '<summary><span class="n">' + n + '</span><div><h2>' + esc(unit.title) + '</h2>' +
-          '<div class="meta">' + lessons.length + (lessons.length === 1 ? " lesson" : " lessons") + '</div></div>' + ICONS.chev + '</summary>' +
-          (unit.summary ? '<p class="summary-text">' + esc(unit.summary) + '</p>' : "") +
+          (unit.summary ? '<div class="sub">' + rich(unit.summary) + '</div>' : "") + '</div>' +
+          ICONS.chev + '</summary>' +
           '<ol class="lessons">' + lessonsHtml + '</ol>' +
         '</details>');
     });

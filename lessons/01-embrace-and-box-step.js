@@ -27,7 +27,7 @@
    ===================================================================== */
 PTC.addUnit({
   title: "The Embrace and Box Step",
-  summary: "Key pointers for the embrace, the steps of the basic box, and tips for turning the box step.",
+  summary: "Pointers for the embrace, the box step, and tips for turning the box step.",
   lessons: [
     {
       title: "Lesson 1 · Embrace",
@@ -104,11 +104,11 @@ PTC.addUnit({
       youtube: "IijVRP4NKb0",
       notes: "Tips for turning the box step.",
       points: [
-        { text: "Rotating the box means every step travels the same way around, instead of returning to where you started.",
+        { text: "Rotating the box means every step travels in the same direction (all go along the red line.)",
           image: "images/l3-direction.jpg" },
-        { text: "Trick one, the diagonal cross: on the first step the leader steps diagonally and the follower takes the other diagonal, which sets up the rotation.",
+        { text: "**Trick one, the diagonal cross**: on the first step the leader steps diagonally and the follower takes the other diagonal, which sets up the rotation.",
           image: "images/l3-diagonal-cross.jpg" },
-        { text: "Trick two, the step around: on the side step the follower takes a larger step around the leader.",
+        { text: "**Trick two, the step around**: on the side step the follower takes a larger step around the leader.",
           image: "images/l3-step-around.jpg" },
         { text: "In the second half the roles reverse, and it is the leader who crosses diagonally, in front of the follower.",
           image: "images/l3-leader-crosses.jpg" },
