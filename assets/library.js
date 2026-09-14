@@ -120,12 +120,15 @@
       '<ul class="points">' + cells.join("") + '</ul></div>';
   }
 
-  // Everything written under the video: notes, then the bullet lists.
-  // `sections` is for a lesson whose points fall into named groups, and
-  // pointsTitle / practiceTitle rename the two standing headings.
-  function writeup(lesson) {
-    return list(lesson.notes).map(p => '<p class="notes">' + rich(p) + '</p>').join("") +
-      bullets(lesson.pointsTitle || "Key points", lesson.points) +
+  // The prose under (or, on a wide screen, beside) the video.
+  function notesOf(lesson) {
+    return list(lesson.notes).map(p => '<p class="notes">' + rich(p) + '</p>').join("");
+  }
+
+  // The titled lists. `sections` is for a lesson whose points fall into
+  // named groups; pointsTitle / practiceTitle rename the two standing ones.
+  function blocksOf(lesson) {
+    return bullets(lesson.pointsTitle || "Key points", lesson.points) +
       list(lesson.sections).map(s => bullets(s.title, s.points)).join("") +
       bullets(lesson.practiceTitle || "Practice", lesson.practice);
   }
@@ -157,17 +160,20 @@
       (dateStr ? '<div class="d">' + dateStr + '</div>' : "") + '</div>' +
       '<span class="dur">' + esc(lesson.duration || "") + '</span></summary>' +
       '<div class="body' + (mats ? "" : " solo") + '">' +
-        '<div>' +
-          '<div class="player">' + (v
-            ? '<button class="poster" type="button" data-src="' + esc(v.src) + '" aria-label="Play ' + esc(lesson.title) + '">' +
-                (v.posters.length ? '<img src="' + esc(v.posters[0]) + '" data-more="' + esc(v.posters.slice(1).join("|")) + '" alt="" loading="lazy">' : "") +
-                '<span class="play">' + PLAY_ICON + '</span></button>'
-            : placeholder(lesson)) + '</div>' +
-          '<p class="watch">' +
-            (v ? '<a href="' + esc(v.watch) + '" target="_blank" rel="noopener">Watch on ' + v.where + ' &#8599;</a>' : "") +
-            (mats ? "" : '<a href="#' + lid + '">Link to this lesson</a>') +
-          '</p>' +
-          writeup(lesson) +
+        '<div class="main">' +
+          '<div class="media">' +
+            '<div class="player">' + (v
+              ? '<button class="poster" type="button" data-src="' + esc(v.src) + '" aria-label="Play ' + esc(lesson.title) + '">' +
+                  (v.posters.length ? '<img src="' + esc(v.posters[0]) + '" data-more="' + esc(v.posters.slice(1).join("|")) + '" alt="" loading="lazy">' : "") +
+                  '<span class="play">' + PLAY_ICON + '</span></button>'
+              : placeholder(lesson)) + '</div>' +
+            '<p class="watch">' +
+              (v ? '<a href="' + esc(v.watch) + '" target="_blank" rel="noopener">Watch on ' + v.where + ' &#8599;</a>' : "") +
+              (mats ? "" : '<a href="#' + lid + '">Link to this lesson</a>') +
+            '</p>' +
+          '</div>' +
+          '<div class="write">' + notesOf(lesson) + '</div>' +
+          '<div class="blocks">' + blocksOf(lesson) + '</div>' +
         '</div>' +
         (mats
           ? '<aside class="side"><h3>Materials</h3><ul class="materials">' + mats + '</ul>' +

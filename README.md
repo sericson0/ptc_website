@@ -192,7 +192,8 @@ const THEME = {
   bodyFont:    "IBM Plex Sans",
   monoFont:    "IBM Plex Mono",
 
-  cornerRadius: 10                 // px
+  cornerRadius: 10,                // px
+  pageWidth: 1500                  // px, how wide the page may grow
 };
 ```
 
@@ -231,6 +232,12 @@ Google Sites blocks are a fixed height and there is no auto-resizing for an embe
 | Everything open | ~4900–6700px |
 
 Nothing sensible shows a whole open lesson without scrolling, so pick a height that looks right shut and let people scroll inside it — **800–900px** is a good starting point. Drag the block as wide as the layout allows too: at full width the key-point cards sit three across, and the same lesson is about a third shorter than it is at two across.
+
+### Filling the width of the block
+
+The page grows to `pageWidth` in [assets/theme.js](assets/theme.js) and then centers, so in a block wider than that you get empty margins either side. Raise it to fill more, or set a huge number to fill the block completely.
+
+Width also changes the shape of a lesson. Past about 1100px the notes move up beside the video instead of sitting under it, which uses the gap to the video's right and makes the lesson shorter — worth having when the block's height is fixed. The key-point cards go from one column to two, three, then four as the room allows.
 
 ### Matching the site's background
 

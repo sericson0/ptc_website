@@ -14,6 +14,7 @@
   --panel-light:  #fffcf7;  --panel-dark:  #2a1f1c;
   --ink-light:    #2b211c;  --ink-dark:    #f0e4da;
   --radius: 10px;
+  --page: 1500px;
   --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
   --sans: "IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
@@ -84,7 +85,7 @@ a { color: var(--accent); }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
-.wrap { max-width: 1120px; margin: 0 auto; }
+.wrap { max-width: var(--page); margin: 0 auto; }
 
 /* ---------- toolbar (no page title: the Google Site supplies it) ---------- */
 .head { display: flex; justify-content: flex-end; padding-bottom: 14px; }
@@ -170,12 +171,26 @@ a { color: var(--accent); }
 }
 /* No materials means no sidebar, so the video gets the room instead. */
 .lesson .body.solo { grid-template-columns: minmax(0, 1fr); }
+/* Prose keeps a readable measure whatever the page width; the video gets
+   a little more room, and a grid of cards gets all of it. */
 .lesson .body.solo .player,
-.lesson .body.solo .watch,
-.lesson .body.solo .notes,
-.lesson .body.solo .block { max-width: 760px; }
-/* A card grid earns more room than a column of prose. */
-.lesson .body.solo .block.with-shots { max-width: 940px; }
+.lesson .body.solo .watch { max-width: 900px; }
+.lesson .body.solo .block.with-shots { max-width: none; }
+.lesson .body .main { min-width: 0; }
+
+/* Given room, the notes sit beside the video rather than under it. That
+   fills the gap to the video's right and keeps the lesson shorter, which
+   matters inside a fixed-height Sites block. Cards stay full width below. */
+@media (min-width: 1100px) {
+  .lesson .body.solo .main {
+    display: grid; grid-template-columns: minmax(0, 900px) minmax(240px, 1fr);
+    column-gap: 34px; align-items: start;
+  }
+  .lesson .body.solo .media { grid-column: 1; }
+  .lesson .body.solo .write { grid-column: 2; }
+  .lesson .body.solo .blocks { grid-column: 1 / -1; }
+  .lesson .body.solo .write .notes:first-child { margin-top: 0; }
+}
 @media (max-width: 860px) { .lesson .body { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .lesson > summary, .lesson .body { padding-left: 14px; } }
 
@@ -222,10 +237,10 @@ a { color: var(--accent); }
 /* A bullet can carry a still from the clip. Once a list has stills it stops
    being a bullet list and becomes a row of cards: picture on top, note under
    it, wrapping to as many columns as the width allows. */
-.block.with-shots { max-width: 940px; }
+.block.with-shots { max-width: none; }
 .block.with-shots .points {
   list-style: none; padding-left: 0;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 26px 22px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 26px 22px;
 }
 .block.with-shots .points li { margin: 0; }
 .points .shot {
