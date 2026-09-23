@@ -250,6 +250,9 @@ a { color: var(--accent); }
   display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; margin-bottom: 9px;
   border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2);
 }
+/* Portrait teaching frames need their full height so heads and feet are not
+   removed by the standard landscape card crop. */
+.points .shot.shot-contain { aspect-ratio: auto; height: auto; object-fit: contain; }
 @media (max-width: 560px) {
   .block.with-shots .points { gap: 20px; }
 }

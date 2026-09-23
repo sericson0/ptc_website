@@ -107,8 +107,9 @@
     if (!rows.length) return "";
     const cells = rows.map(item => {
       const r = typeof item === "string" ? { text: item } : item;
+      const shotClass = r.imageFit === "contain" ? "shot shot-contain" : "shot";
       const shot = r.image
-        ? '<img class="shot" src="' + esc(r.image) + '" alt="' + esc(r.alt || "") + '" loading="lazy" decoding="async">'
+        ? '<img class="' + shotClass + '" src="' + esc(r.image) + '" alt="' + esc(r.alt || "") + '" loading="lazy" decoding="async">'
         : "";
       // Picture first: with stills the list is drawn as cards, image on top.
       return '<li' + (shot ? ' class="has-shot"' : "") + '><div class="pt">' + shot +

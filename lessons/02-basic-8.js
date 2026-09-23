@@ -21,23 +21,28 @@ PTC.addUnit({
           points: [
             {
               text: "Begin with the first three steps: the leader steps back with the right foot, side with the left, and forward outside partner with the right.",
-              image: "images/basic-8-01.jpg"
+              image: "images/basic-8-01.jpg",
+              imageFit: "contain"
             },
             {
               text: "In outside-partner position, both of the leader’s feet are to the right of the follower’s feet, while both of the follower’s feet are to the right of the leader’s feet.",
-              image: "images/basic-8-02.jpg"
+              image: "images/basic-8-02.jpg",
+              imageFit: "contain"
             },
             {
               text: "Continue with another forward step, then the leader collects while the follower crosses the left foot over the right.",
-              image: "images/basic-8-03.jpg"
+              image: "images/basic-8-03.jpg",
+              imageFit: "contain"
             },
             {
               text: "Finish with the last three steps: forward with the left, side, then collect and return the weight to the left leg.",
-              image: "images/basic-8-04.jpg"
+              image: "images/basic-8-04.jpg",
+              imageFit: "contain"
             },
             {
               text: "From the completed position, the leader can repeat the sequence by stepping back with the right foot.",
-              image: "images/basic-8-05.jpg"
+              image: "images/basic-8-05.jpg",
+              imageFit: "contain"
             }
           ]
         },
@@ -46,15 +51,18 @@ PTC.addUnit({
           points: [
             {
               text: "On step four, the follower should extend the leg back and take a full step, arriving with the head between the feet.",
-              image: "images/basic-8-06.jpg"
+              image: "images/basic-8-06.jpg",
+              imageFit: "contain"
             },
             {
               text: "The full back step creates enough time for the follower to bring the legs together for the cross.",
-              image: "images/basic-8-07.jpg"
+              image: "images/basic-8-07.jpg",
+              imageFit: "contain"
             },
             {
               text: "The leader must collect the feet instead of taking another forward step with the right, which would leave the follower too little space to cross.",
-              image: "images/basic-8-08.jpg"
+              image: "images/basic-8-08.jpg",
+              imageFit: "contain"
             }
           ]
         }

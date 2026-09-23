@@ -51,7 +51,11 @@ test("lessonFromDraft strips workflow-only timestamps", () => {
   }, 4, "abc123");
   assert.equal(lesson.title, "Lesson 4 · A Turn");
   assert.equal(lesson.youtube, "abc123");
-  assert.deepEqual(lesson.sections[0].points[0], { text: "Step", image: "images/step.jpg" });
+  assert.deepEqual(lesson.sections[0].points[0], {
+    text: "Step",
+    image: "images/step.jpg",
+    imageFit: "contain",
+  });
 });
 
 test("a later YouTube upload can replace a generated placeholder", async (t) => {

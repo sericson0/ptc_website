@@ -158,7 +158,7 @@ export function lessonFromDraft(draft, lessonNumber, youtubeId) {
       title: section.title,
       points: (section.points || []).map((point) => ({
         text: point.text,
-        ...(point.image ? { image: point.image } : {}),
+        ...(point.image ? { image: point.image, imageFit: point.imageFit || "contain" } : {}),
       })),
     })),
     practice: draft.lesson.practice || [],
