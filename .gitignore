@@ -1,0 +1,6 @@
+# Local credentials and generated workflow state
+.env
+.ptc-work/
+.ptc-venv/
+.ptc-models/
+secrets/

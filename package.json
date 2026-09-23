@@ -1,0 +1,10 @@
+{
+  "name": "ptc-class-library",
+  "private": true,
+  "scripts": {
+    "video:gui": "node tools/video-gui.mjs",
+    "video:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/setup-local-ai.ps1",
+    "video:new": "node tools/video-pipeline.mjs",
+    "test": "node --test"
+  }
+}

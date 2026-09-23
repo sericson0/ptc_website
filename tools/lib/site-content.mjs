@@ -1,0 +1,201 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import vm from "node:vm";
+
+export function slugify(value) {
+  return String(value || "lesson")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "") || "lesson";
+}
+
+export function formatDuration(totalSeconds) {
+  const seconds = Math.max(0, Math.round(Number(totalSeconds) || 0));
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainder = seconds % 60;
+  return hours
+    ? `${hours}:${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`
+    : `${minutes}:${String(remainder).padStart(2, "0")}`;
+}
+
+async function evaluateUnit(filePath) {
+  const source = await fs.readFile(filePath, "utf8");
+  let unit;
+  const context = vm.createContext({
+    PTC: { addUnit(value) { unit = value; return value; } },
+  });
+  new vm.Script(source, { filename: filePath }).runInContext(context);
+  if (!unit || typeof unit !== "object") {
+    throw new Error(`No PTC.addUnit(...) call found in ${filePath}`);
+  }
+  return unit;
+}
+
+export async function discoverUnits(rootDir) {
+  const indexPath = path.join(rootDir, "index.html");
+  const index = await fs.readFile(indexPath, "utf8");
+  const units = [];
+  const pattern = /<script\s+defer\s+src=["'](lessons\/[^"']+\.js)["']><\/script>/g;
+  for (const match of index.matchAll(pattern)) {
+    if (match[1].endsWith("/_TEMPLATE.js")) continue;
+    const relativeFile = match[1].replaceAll("/", path.sep);
+    const filePath = path.join(rootDir, relativeFile);
+    const unit = await evaluateUnit(filePath);
+    units.push({
+      ...unit,
+      relativeFile: match[1],
+      filePath,
+      lessonCount: Array.isArray(unit.lessons) ? unit.lessons.length : 0,
+    });
+  }
+  return units;
+}
+
+function matchingBracket(source, startIndex) {
+  let depth = 0;
+  let quote = null;
+  let escaped = false;
+  let lineComment = false;
+  let blockComment = false;
+
+  for (let i = startIndex; i < source.length; i += 1) {
+    const char = source[i];
+    const next = source[i + 1];
+
+    if (lineComment) {
+      if (char === "\n") lineComment = false;
+      continue;
+    }
+    if (blockComment) {
+      if (char === "*" && next === "/") { blockComment = false; i += 1; }
+      continue;
+    }
+    if (quote) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === quote) quote = null;
+      continue;
+    }
+    if (char === "/" && next === "/") { lineComment = true; i += 1; continue; }
+    if (char === "/" && next === "*") { blockComment = true; i += 1; continue; }
+    if (char === "\"" || char === "'" || char === "`") { quote = char; continue; }
+    if (char === "[") depth += 1;
+    if (char === "]") {
+      depth -= 1;
+      if (depth === 0) return i;
+    }
+  }
+  throw new Error("Could not find the end of the lessons array.");
+}
+
+function indentJson(value, spaces) {
+  const prefix = " ".repeat(spaces);
+  return JSON.stringify(value, null, 2)
+    .split("\n")
+    .map((line) => prefix + line)
+    .join("\n");
+}
+
+export async function appendLesson(filePath, lesson) {
+  const source = await fs.readFile(filePath, "utf8");
+  const property = /\blessons\s*:\s*\[/.exec(source);
+  if (!property) throw new Error(`Could not find a lessons array in ${filePath}`);
+  const openIndex = source.indexOf("[", property.index);
+  const closeIndex = matchingBracket(source, openIndex);
+  const current = source.slice(openIndex + 1, closeIndex);
+  const hasLessons = current.trim().length > 0;
+  const endsWithComma = current.trimEnd().endsWith(",");
+  const formatted = indentJson(lesson, 4);
+  const insertion = hasLessons
+    ? `${endsWithComma ? "" : ","}\n${formatted}`
+    : `\n${formatted}`;
+  const contentEnd = openIndex + 1 + current.trimEnd().length;
+  const updated = source.slice(0, contentEnd) + insertion + source.slice(contentEnd);
+  await fs.writeFile(filePath, updated, "utf8");
+  await evaluateUnit(filePath);
+}
+
+async function nextUnitFilename(rootDir, title) {
+  const lessonDir = path.join(rootDir, "lessons");
+  const files = await fs.readdir(lessonDir);
+  const highest = files.reduce((max, file) => {
+    const match = /^(\d+)-/.exec(file);
+    return match ? Math.max(max, Number(match[1])) : max;
+  }, 0);
+  return `${String(highest + 1).padStart(2, "0")}-${slugify(title)}.js`;
+}
+
+export async function createUnit(rootDir, unit) {
+  const filename = await nextUnitFilename(rootDir, unit.title);
+  const relativeFile = `lessons/${filename}`;
+  const filePath = path.join(rootDir, "lessons", filename);
+  const indexPath = path.join(rootDir, "index.html");
+  const index = await fs.readFile(indexPath, "utf8");
+  const marker = "<!-- ============================================================ -->";
+  if (!index.includes(marker)) throw new Error("Could not find the lesson-script marker in index.html");
+  const source = `/* Generated by the PTC video workflow. Review before committing. */\nPTC.addUnit(${JSON.stringify(unit, null, 2)});\n`;
+  await fs.writeFile(filePath, source, { encoding: "utf8", flag: "wx" });
+  const script = `<script defer src="${relativeFile}"></script>\n`;
+  await fs.writeFile(indexPath, index.replace(marker, script + marker), "utf8");
+  await evaluateUnit(filePath);
+  return { filePath, relativeFile };
+}
+
+export function lessonFromDraft(draft, lessonNumber, youtubeId) {
+  const cleanTitle = String(draft.lesson.title || "Untitled")
+    .replace(/^Lesson\s+\d+\s*[·:\-]\s*/i, "")
+    .trim();
+  const lesson = {
+    title: `Lesson ${lessonNumber} · ${cleanTitle}`,
+    date: draft.lesson.date,
+    duration: draft.lesson.duration,
+    youtube: youtubeId || "PASTE_VIDEO_ID",
+    notes: draft.lesson.notes,
+    sections: (draft.lesson.sections || []).map((section) => ({
+      title: section.title,
+      points: (section.points || []).map((point) => ({
+        text: point.text,
+        ...(point.image ? { image: point.image } : {}),
+      })),
+    })),
+    practice: draft.lesson.practice || [],
+    materials: draft.lesson.materials || [],
+  };
+  return Object.fromEntries(Object.entries(lesson).filter(([, value]) => value !== undefined));
+}
+
+export async function applyDraftToSite(rootDir, draft) {
+  const units = await discoverUnits(rootDir);
+  if (draft.placement.type === "existing") {
+    const target = units.find((unit) => unit.relativeFile === draft.placement.relativeFile);
+    if (!target) throw new Error(`Unit file is no longer listed in index.html: ${draft.placement.relativeFile}`);
+    const lesson = lessonFromDraft(draft, target.lessonCount + 1, draft.youtube.videoId);
+    await appendLesson(target.filePath, lesson);
+    return { relativeFile: target.relativeFile, lessonTitle: lesson.title };
+  }
+
+  const lesson = lessonFromDraft(draft, 1, draft.youtube.videoId);
+  const result = await createUnit(rootDir, {
+    title: draft.placement.unitTitle,
+    summary: draft.placement.unitSummary,
+    lessons: [lesson],
+  });
+  return { relativeFile: result.relativeFile, lessonTitle: lesson.title };
+}
+
+export async function updateGeneratedYouTubeId(rootDir, siteApplied, youtubeId) {
+  const filePath = path.join(rootDir, siteApplied.relativeFile.replaceAll("/", path.sep));
+  const source = await fs.readFile(filePath, "utf8");
+  const placeholder = '"youtube": "PASTE_VIDEO_ID"';
+  const index = source.lastIndexOf(placeholder);
+  if (index < 0) {
+    throw new Error(`Could not find the generated YouTube placeholder in ${siteApplied.relativeFile}`);
+  }
+  const replacement = `"youtube": ${JSON.stringify(youtubeId)}`;
+  const updated = source.slice(0, index) + replacement + source.slice(index + placeholder.length);
+  await fs.writeFile(filePath, updated, "utf8");
+  await evaluateUnit(filePath);
+}

@@ -8,12 +8,30 @@ A small static site that shows class videos and materials in collapsible units a
 
 To preview before pushing, double-click `index.html` — it runs straight from disk, no server needed.
 
+## Add a lesson from a finished video
+
+Open the local Video Studio, then drag a finished video onto it. The graphical
+workflow transcribes the video, drafts the lesson and YouTube copy, extracts
+teaching stills, pauses for your edits and approval, and can then create a
+private YouTube upload and update the appropriate lesson file:
+
+```powershell
+.\open-video-studio.cmd
+```
+
+Transcription runs locally. Lesson drafting uses the ChatGPT account signed
+into Codex, not the OpenAI API key or API credit balance.
+
+One-time credentials and the full review/resume workflow are documented in
+[tools/README.md](tools/README.md). It does not commit, push, or make a video
+public.
+
 ## Where things live
 
 ```
 index.html                        the page, and the list of lesson groups it shows
 lessons/01-embrace-and-box-step.js   one file per group of lessons  ← what you edit
-lessons/02-coming-soon.js
+lessons/02-basic-8.js
 lessons/03-extra-resources.js
 lessons/_TEMPLATE.js              copy this to start a new group
 images/                           stills from the clips, shown beside the key points

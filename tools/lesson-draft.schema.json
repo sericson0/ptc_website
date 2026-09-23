@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["lessonTitle", "notes", "sections", "practice", "youtubeTitle", "youtubeDescription", "youtubeTags"],
+  "properties": {
+    "lessonTitle": { "type": "string" },
+    "notes": { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 3 },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "points"],
+        "properties": {
+          "title": { "type": "string" },
+          "points": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["text", "timeSeconds"],
+              "properties": {
+                "text": { "type": "string" },
+                "timeSeconds": { "type": "number", "minimum": 0 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "practice": { "type": "array", "items": { "type": "string" }, "maxItems": 6 },
+    "youtubeTitle": { "type": "string", "maxLength": 100 },
+    "youtubeDescription": { "type": "string", "maxLength": 5000 },
+    "youtubeTags": { "type": "array", "items": { "type": "string" }, "maxItems": 15 }
+  }
+}

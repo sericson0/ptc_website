@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PTC Video Studio</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">PTC</span>
+      <div><strong>Video Studio</strong><span>Lesson publishing workflow</span></div>
+    </div>
+    <span class="local"><i></i> Local Whisper + ChatGPT plan</span>
+  </header>
+
+  <main>
+    <div id="config-alert" class="alert" hidden></div>
+
+    <section id="setup-panel" class="panel setup-grid">
+      <div class="intro">
+        <p class="eyebrow">New lesson</p>
+        <h1>Turn a finished video into a lesson.</h1>
+        <p>Drop in your recording. Local Whisper transcribes it, your ChatGPT plan drafts the lesson, and nothing is submitted before your approval.</p>
+
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose or drop a video">
+          <input id="file-input" type="file" accept="video/*" hidden>
+          <div class="drop-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+          </div>
+          <strong>Drop your video here</strong>
+          <span>or click to browse · MP4, MOV, WebM</span>
+        </div>
+
+        <div id="file-card" class="file-card" hidden>
+          <div class="file-type">VIDEO</div>
+          <div class="file-copy"><strong id="file-name"></strong><span id="file-size"></span></div>
+          <button id="replace-file" class="text-button" type="button">Replace</button>
+        </div>
+        <div id="upload-wrap" class="progress-wrap" hidden>
+          <div class="progress-label"><span id="upload-label">Uploading locally…</span><span id="upload-percent">0%</span></div>
+          <div class="progress"><i id="upload-bar"></i></div>
+        </div>
+      </div>
+
+      <form id="lesson-form" class="details" autocomplete="off">
+        <div class="form-heading"><span>Lesson details</span><small>These guide the transcript</small></div>
+        <label>Working title<input id="working-title" required placeholder="e.g. Walking to the cross"></label>
+        <label>Where should it go?
+          <select id="placement" required><option value="">Loading units…</option></select>
+        </label>
+        <div id="new-unit-fields" class="nested" hidden>
+          <label>New unit title<input id="unit-title" placeholder="e.g. The Cross"></label>
+          <label>Unit summary<input id="unit-summary" placeholder="One sentence about this group"></label>
+        </div>
+        <label>Vocabulary or context <span class="optional">optional</span>
+          <textarea id="extra-context" rows="3" placeholder="Names, unusual tango terms, intended level…"></textarea>
+        </label>
+        <label>YouTube playlist <span class="optional">optional</span>
+          <input id="playlist-url" type="url" placeholder="https://www.youtube.com/playlist?list=…">
+        </label>
+        <label class="check"><input id="made-for-kids" type="checkbox"><span>This video is made specifically for children</span></label>
+        <button id="start-button" class="primary" type="submit" disabled>Choose a video to begin</button>
+        <p class="privacy">Nothing is added to the website or YouTube during this step.</p>
+        <p class="privacy">API billing is disabled. Do not purchase add-on ChatGPT credits if you want Codex to stop when the plan allowance is exhausted.</p>
+      </form>
+    </section>
+
+    <section id="processing-panel" class="panel processing" hidden>
+      <div class="orbit"><i></i><span>PTC</span></div>
+      <p class="eyebrow">Preparing your draft</p>
+      <h2 id="process-message">Inspecting the video…</h2>
+      <p id="process-detail">You can leave this tab open while the lesson is prepared.</p>
+      <div class="progress large"><i id="process-bar"></i></div>
+      <span id="process-percent" class="percent">0%</span>
+    </section>
+
+    <section id="review-panel" hidden>
+      <div class="review-head">
+        <div><p class="eyebrow">Review required</p><h1>Edit the draft before anything is submitted.</h1></div>
+        <span id="save-state" class="save-state">Unsaved</span>
+      </div>
+
+      <div class="review-layout">
+        <div class="review-main">
+          <section class="panel editor-card">
+            <div class="card-title"><span>Website lesson</span><small>Shown in your class library</small></div>
+            <label>Lesson title<input id="review-lesson-title"></label>
+            <label>Introductory notes<textarea id="review-notes" rows="5"></textarea><small>Separate paragraphs with a blank line.</small></label>
+            <div class="subhead"><span>Teaching sections</span><button id="add-section" class="text-button" type="button">+ Add section</button></div>
+            <div id="sections-editor"></div>
+            <label>Practice prompts<textarea id="review-practice" rows="5"></textarea><small>One prompt per line.</small></label>
+          </section>
+
+          <section class="panel editor-card">
+            <div class="card-title"><span>YouTube copy</span><small>Uploaded privately after approval</small></div>
+            <label>Video title<input id="youtube-title" maxlength="100"><span id="title-count" class="counter"></span></label>
+            <label>Description<textarea id="youtube-description" rows="10" maxlength="5000"></textarea></label>
+            <label>Tags<input id="youtube-tags" placeholder="tango, beginner tango, technique"><small>Comma-separated.</small></label>
+            <label>Playlist<input id="review-playlist" type="url"></label>
+          </section>
+        </div>
+
+        <aside class="panel approval-card">
+          <p class="eyebrow">Final approval</p>
+          <h2>Choose what happens next.</h2>
+          <label class="action-choice"><input id="action-site" type="checkbox" checked><span><strong>Update website</strong><small>Move approved stills into images and write the lesson file.</small></span></label>
+          <label class="action-choice"><input id="action-youtube" type="checkbox"><span><strong>Upload to YouTube</strong><small>Create a private video with this title and description.</small></span></label>
+          <label class="action-choice"><input id="action-playlist" type="checkbox" checked><span><strong>Add to playlist</strong><small>Only runs when a YouTube video exists.</small></span></label>
+          <div class="approval-note">The video stays <strong>Private</strong>. You make it Unlisted or Public later in YouTube Studio.</div>
+          <button id="save-button" class="secondary" type="button">Save draft</button>
+          <button id="approve-button" class="primary" type="button">Approve selected actions</button>
+        </aside>
+      </div>
+    </section>
+
+    <section id="complete-panel" class="panel complete" hidden>
+      <div class="done">✓</div>
+      <p class="eyebrow">Complete</p>
+      <h1>Your approved actions are finished.</h1>
+      <p id="complete-summary"></p>
+      <div class="complete-actions">
+        <a id="youtube-link" class="secondary button-link" target="_blank" rel="noopener" hidden>Open private video</a>
+        <button id="another-button" class="primary" type="button">Prepare another video</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

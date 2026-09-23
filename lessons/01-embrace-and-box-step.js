@@ -119,7 +119,7 @@ PTC.addUnit({
         "Practice implementing the two tricks in the box step.",
         "Try linking two sets of box steps all going in the same direction."
       ],
-      materials: []
+      "materials": []
     }
   ]
 });
