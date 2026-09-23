@@ -1,8 +1,8 @@
 # Video-to-lesson workflow
 
 This local tool turns one finished video into a reviewed website lesson and an
-optional private YouTube upload. It never commits, pushes, publishes a public
-video, or changes YouTube before an explicit approval.
+optional private YouTube upload. It never changes the website, YouTube, or Git
+before an explicit approval or button press, and it never makes a video public.
 
 ## One-time setup
 
@@ -55,9 +55,12 @@ streamed directly into the ignored `.ptc-work/` folder instead of being held in
 browser or server memory.
 
 The review screen lets you edit every lesson note, teaching point, timestamp,
-practice prompt, title, description, tag, and playlist. It also previews all
-proposed still images. The final controls separately approve the website update,
-private YouTube upload, and playlist addition.
+practice prompt, title, description, tag, and playlist. Changing a timestamp
+quickly previews that frame; **Save this still** keeps it. The final controls
+separately approve the website update, private YouTube upload, and playlist
+addition. After the approved actions finish, **Commit & push to GitHub** commits
+only that lesson file, its generated images, and `index.html` when a new unit was
+created, then pushes the current branch to `origin`.
 
 ## Command-line alternative
 
@@ -87,7 +90,9 @@ The tool will:
 7. optionally upload the video as **private**, add it to the selected playlist,
    and put its video ID into the website lesson;
 8. move approved stills into `images/`, then update an existing `lessons/*.js`
-   file or create a new one and register it in `index.html`.
+   file or create a new one and register it in `index.html`;
+9. optionally commit those generated website files and push them to GitHub from
+   the completion screen.
 
 If you stop at review, nothing is submitted. Resume later with the exact command
 printed by the tool, or:

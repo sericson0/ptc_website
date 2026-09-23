@@ -6,6 +6,7 @@ import path from "node:path";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { applyDraftToSite, discoverUnits, updateGeneratedYouTubeId } from "./lib/site-content.mjs";
+import { publishDraftChanges } from "./lib/repository-publish.mjs";
 import { subscriptionStatus } from "./lib/subscription-workflow.mjs";
 import { addVideoToPlaylist, getYouTubeAccessToken, playlistIdFromUrl, uploadPrivateVideo, YOUTUBE_MANAGE_SCOPE, YOUTUBE_UPLOAD_SCOPE } from "./lib/youtube.mjs";
 import { aiProvider, extractStill, loadDotEnv, processVideo, publishImages, ROOT, saveDraft, WORK_ROOT } from "./video-pipeline.mjs";
@@ -13,6 +14,8 @@ import { aiProvider, extractStill, loadDotEnv, processVideo, publishImages, ROOT
 const GUI_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "gui");
 const PORT = Number(process.env.PTC_GUI_PORT || 4173);
 const jobs = new Map();
+const previewExtractions = new Map();
+const repositoryPublishes = new Set();
 
 function json(response, status, value) {
   const body = JSON.stringify(value);
@@ -126,6 +129,26 @@ async function serveFile(response, filePath) {
     fs.createReadStream(filePath).pipe(response);
   } catch {
     response.writeHead(404).end("Not found");
+  }
+}
+
+async function servePreviewStill(response, job, timestamp) {
+  if (!Number.isFinite(timestamp) || timestamp < 0) return json(response, 400, { error: "Choose a valid timestamp." });
+  const rounded = Math.round(timestamp * 10) / 10;
+  const key = `${job.id}:${rounded}`;
+  const imagePath = path.join(job.jobDir, "preview-stills", `at-${String(Math.round(rounded * 10)).padStart(6, "0")}.jpg`);
+  let extraction = previewExtractions.get(key);
+  if (!extraction) {
+    extraction = fsp.access(imagePath).catch(async () => {
+      await extractStill(job.videoPath, rounded + 0.35, imagePath);
+    }).finally(() => previewExtractions.delete(key));
+    previewExtractions.set(key, extraction);
+  }
+  try {
+    await extraction;
+    return serveFile(response, imagePath);
+  } catch (error) {
+    return json(response, 500, { error: `Could not preview this frame. ${error.message}` });
   }
 }
 
@@ -303,6 +326,25 @@ async function approveJob(response, job, body) {
   });
 }
 
+async function publishRepositoryJob(response, job, body) {
+  if (!job.draftPath) return json(response, 409, { error: "This job has no draft to publish." });
+  if (repositoryPublishes.has(job.id)) return json(response, 409, { error: "A GitHub publish is already running for this lesson." });
+  const draft = JSON.parse(await fsp.readFile(job.draftPath, "utf8"));
+  if (!draft.siteApplied) return json(response, 409, { error: "Update the website before committing and pushing it." });
+  repositoryPublishes.add(job.id);
+  try {
+    const result = await publishDraftChanges(ROOT, draft, body.commitMessage);
+    draft.repository = {
+      ...result,
+      pushedAt: new Date().toISOString(),
+    };
+    await saveDraft(job.draftPath, draft);
+    return json(response, 200, { ok: true, result, draft });
+  } finally {
+    repositoryPublishes.delete(job.id);
+  }
+}
+
 async function route(request, response) {
   const url = new URL(request.url, `http://${request.headers.host || `127.0.0.1:${PORT}`}`);
   const origin = request.headers.origin;
@@ -339,7 +381,7 @@ async function route(request, response) {
     return uploadVideo(request, response, id, url);
   }
 
-  const jobMatch = /^\/api\/jobs\/([^/]+)(?:\/(process|draft|approve|image))?$/.exec(url.pathname);
+  const jobMatch = /^\/api\/jobs\/([^/]+)(?:\/(process|draft|approve|image|preview|publish))?$/.exec(url.pathname);
   if (jobMatch) {
     const id = safeJobId(jobMatch[1]);
     const action = jobMatch[2] || "";
@@ -355,6 +397,7 @@ async function route(request, response) {
       return json(response, 200, { ok: true });
     }
     if (request.method === "POST" && action === "approve") return approveJob(response, job, await readJsonBody(request));
+    if (request.method === "POST" && action === "publish") return publishRepositoryJob(response, job, await readJsonBody(request));
     if (request.method === "POST" && action === "image") {
       const body = await readJsonBody(request);
       const section = Number(body.section);
@@ -370,6 +413,9 @@ async function route(request, response) {
       delete item.image;
       await saveDraft(job.draftPath, draft);
       return json(response, 200, { draft });
+    }
+    if (request.method === "GET" && action === "preview") {
+      return servePreviewStill(response, job, Number(url.searchParams.get("time")));
     }
     if (request.method === "GET" && action === "image") {
       const section = Number(url.searchParams.get("section"));

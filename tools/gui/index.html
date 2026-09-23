@@ -89,7 +89,7 @@
             <div class="card-title"><span>Website lesson</span><small>Shown in your class library</small></div>
             <label>Lesson title<input id="review-lesson-title"></label>
             <label>Introductory notes<textarea id="review-notes" rows="5"></textarea><small>Separate paragraphs with a blank line.</small></label>
-            <div class="subhead"><span>Teaching sections</span><button id="add-section" class="text-button" type="button">+ Add section</button></div>
+            <div class="subhead"><span>Teaching sections</span><div class="section-actions"><small>Change a timestamp to preview its frame; save only the one you want.</small><button id="add-section" class="text-button" type="button">+ Add section</button></div></div>
             <div id="sections-editor"></div>
             <label>Practice prompts<textarea id="review-practice" rows="5"></textarea><small>One prompt per line.</small></label>
           </section>
@@ -121,6 +121,11 @@
       <p class="eyebrow">Complete</p>
       <h1>Your approved actions are finished.</h1>
       <p id="complete-summary"></p>
+      <div id="repository-publish" class="repository-publish" hidden>
+        <label>Git commit message<input id="commit-message" maxlength="120"></label>
+        <button id="publish-button" class="primary" type="button">Commit &amp; push to GitHub</button>
+        <p id="publish-state">Commits only this lesson, its generated images, and the lesson index entry.</p>
+      </div>
       <div class="complete-actions">
         <a id="youtube-link" class="secondary button-link" target="_blank" rel="noopener" hidden>Open private video</a>
         <button id="another-button" class="primary" type="button">Prepare another video</button>

@@ -231,6 +231,7 @@
         }
         const stamp = document.createElement("span");
         stamp.textContent = `${Math.round(Number(point.timeSeconds) || 0)} sec`;
+        stamp.className = "still-time";
         preview.append(stamp);
 
         const fields = document.createElement("div");
@@ -248,6 +249,7 @@
         time.type = "number";
         time.min = "0";
         time.step = ".1";
+        time.setAttribute("aria-label", "Still timestamp in seconds");
         time.value = Number(point.timeSeconds) || 0;
         timeLabel.append(time);
         const removePoint = document.createElement("button");
@@ -258,7 +260,8 @@
         const refresh = document.createElement("button");
         refresh.type = "button";
         refresh.className = "text-button refresh-still";
-        refresh.textContent = "Refresh still";
+        refresh.textContent = "Save this still";
+        refresh.title = "Save the frame currently shown at this timestamp";
         meta.append(timeLabel, refresh, removePoint);
         fields.append(text, meta);
         row.append(preview, fields);
@@ -325,6 +328,43 @@
     $("#title-count").textContent = `${$("#youtube-title").value.length}/100`;
   }
 
+  function previewStill(row) {
+    const timeInput = $(".point-time", row);
+    const preview = $(".point-image", row);
+    let image = $("img", preview);
+    const stamp = $(".still-time", row);
+    const timestamp = Math.max(0, Number(timeInput.value) || 0);
+    if (!image) {
+      image = document.createElement("img");
+      image.alt = "Timestamp preview";
+      preview.prepend(image);
+    }
+    const requestKey = `${timestamp}:${Date.now()}`;
+    row.dataset.previewRequest = requestKey;
+    row.classList.add("previewing");
+    stamp.textContent = `${timestamp.toFixed(1)} sec · previewing…`;
+    const previewUrl = `/api/jobs/${state.jobId}/preview?time=${encodeURIComponent(timestamp)}&v=${Date.now()}`;
+    const loaded = () => {
+      if (row.dataset.previewRequest !== requestKey) return;
+      row.classList.remove("previewing");
+      stamp.textContent = `${timestamp.toFixed(1)} sec · preview`;
+    };
+    const failed = () => {
+      if (row.dataset.previewRequest !== requestKey) return;
+      row.classList.remove("previewing");
+      stamp.textContent = "Preview unavailable";
+      showAlert("Could not preview that timestamp. Try a moment earlier in the video.");
+    };
+    image.addEventListener("load", loaded, { once: true });
+    image.addEventListener("error", failed, { once: true });
+    image.src = previewUrl;
+  }
+
+  function scheduleStillPreview(row) {
+    clearTimeout(row.previewTimer);
+    row.previewTimer = setTimeout(() => previewStill(row), 450);
+  }
+
   function updateActionState() {
     const hasPlaylist = Boolean($("#review-playlist").value.trim());
     const canHaveVideo = Boolean(state.draft?.youtube?.videoId) || $("#action-youtube").checked;
@@ -365,6 +405,42 @@
     const link = $("#youtube-link");
     link.hidden = !state.draft.youtube.url;
     if (state.draft.youtube.url) link.href = state.draft.youtube.url;
+    const publishPanel = $("#repository-publish");
+    const publishButton = $("#publish-button");
+    const publishState = $("#publish-state");
+    publishPanel.hidden = !state.draft.siteApplied;
+    if (state.draft.siteApplied) {
+      const message = $("#commit-message");
+      if (!message.value) message.value = `Publish ${state.draft.lesson.title || "lesson"}`;
+      const repository = state.draft.repository;
+      publishButton.disabled = Boolean(repository?.pushedAt);
+      publishState.textContent = repository?.pushedAt
+        ? `Pushed commit ${repository.commit.slice(0, 7)} to origin/${repository.branch}.`
+        : "Commits only this lesson, its generated images, and the lesson index entry.";
+    }
+  }
+
+  async function publishRepository() {
+    const button = $("#publish-button");
+    const status = $("#publish-state");
+    button.disabled = true;
+    status.textContent = "Committing lesson files and pushing to GitHub…";
+    showAlert("");
+    try {
+      const { result, draft } = await api(`/api/jobs/${state.jobId}/publish`, {
+        method: "POST",
+        body: JSON.stringify({ commitMessage: $("#commit-message").value.trim() }),
+      });
+      state.draft = draft;
+      status.textContent = result.committed
+        ? `Pushed commit ${result.commit.slice(0, 7)} to origin/${result.branch}.`
+        : `No new lesson changes needed a commit; origin/${result.branch} is up to date.`;
+      renderComplete();
+    } catch (error) {
+      button.disabled = false;
+      status.textContent = "GitHub publish did not finish.";
+      showAlert(error.message);
+    }
   }
 
   async function restoreJob() {
@@ -442,6 +518,7 @@
   $("#action-youtube").addEventListener("change", updateActionState);
   $("#save-button").addEventListener("click", () => saveDraft().catch((error) => showAlert(error.message)));
   $("#approve-button").addEventListener("click", approve);
+  $("#publish-button").addEventListener("click", publishRepository);
   $("#add-section").addEventListener("click", () => {
     collectDraft();
     state.draft.lesson.sections.push({ title: "New section", points: [] });
@@ -475,6 +552,10 @@
       state.draft.lesson.sections[sectionIndex].points.push({ text: "New teaching point", timeSeconds: 0 });
     } else return;
     renderSections();
+  });
+  $("#sections-editor").addEventListener("input", (event) => {
+    if (!event.target.matches(".point-time")) return;
+    scheduleStillPreview(event.target.closest(".point-editor"));
   });
   $("#another-button").addEventListener("click", () => { localStorage.removeItem("ptcCurrentJob"); location.reload(); });
 
