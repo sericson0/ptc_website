@@ -28,12 +28,7 @@ const THEME = {
   bodyFont:    "IBM Plex Sans",    // everything else
   monoFont:    "IBM Plex Mono",    // numbers, labels, durations
 
-  cornerRadius: 10,                // px, roundness of cards and buttons
-
-  // How wide the page is allowed to grow. In a wide Google Sites embed the
-  // leftover space either side is this cap doing its job; raise it to fill
-  // more of the block, or set 99999 to fill the block completely.
-  pageWidth: 1500                  // px
+  cornerRadius: 10                 // px, roundness of cards and buttons
 };
 
 /* ===== Nothing below here needs editing. =============================
@@ -53,7 +48,6 @@ const THEME = {
   set("--sans", '"' + THEME.bodyFont + '", "Segoe UI", Roboto, Helvetica, Arial, sans-serif');
   set("--mono", '"' + THEME.monoFont + '", Consolas, "Courier New", monospace');
   set("--radius", THEME.cornerRadius + "px");
-  set("--page", (THEME.pageWidth || 1500) + "px");
   const fam = f => "family=" + encodeURIComponent(f).replace(/%20/g, "+") + ":ital,wght@0,400;0,500;0,600;1,400";
   const link = document.createElement("link");
   link.rel = "stylesheet";

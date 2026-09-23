@@ -20,29 +20,52 @@ PTC.addUnit({
           title: "The Eight-Step Sequence",
           points: [
             {
-              text: "Begin with the first three steps: the leader steps back with the right foot, side with the left, and forward outside partner with the right.",
+              text: "**Step 1** — Leader: step back with the right foot. Follower: step forward with the left foot.",
+              image: "images/basic-8-step-01.jpg",
+              imageFit: "contain",
+              alt: "Basic 8 step 1: leader steps back with the right foot and follower steps forward with the left"
+            },
+            {
+              text: "**Step 2** — Leader: step side with the left foot. Follower: step side with the right foot.",
               image: "images/basic-8-01.jpg",
-              imageFit: "contain"
+              imageFit: "contain",
+              alt: "Basic 8 step 2: partners step to the side"
             },
             {
-              text: "In outside-partner position, both of the leader’s feet are to the right of the follower’s feet, while both of the follower’s feet are to the right of the leader’s feet.",
+              text: "**Step 3** — Leader: step forward with the right foot outside the follower. Follower: step back with the left foot; the couple arrives in outside-partner position.",
               image: "images/basic-8-02.jpg",
-              imageFit: "contain"
+              imageFit: "contain",
+              alt: "Basic 8 step 3: leader steps forward outside partner"
             },
             {
-              text: "Continue with another forward step, then the leader collects while the follower crosses the left foot over the right.",
+              text: "**Step 4** — Leader: step forward with the left foot. Follower: take a full step back with the right foot, keeping the head between the feet.",
+              image: "images/basic-8-step-04.jpg",
+              imageFit: "contain",
+              alt: "Basic 8 step 4: leader steps forward and follower takes a full back step"
+            },
+            {
+              text: "**Step 5** — Leader: collect the right foot beside the left and transfer weight to the right. Follower: cross the left foot over the right, aiming for pinky-toe-to-pinky-toe.",
               image: "images/basic-8-03.jpg",
-              imageFit: "contain"
+              imageFit: "contain",
+              alt: "Basic 8 step 5: leader collects while follower crosses left over right"
             },
             {
-              text: "Finish with the last three steps: forward with the left, side, then collect and return the weight to the left leg.",
+              text: "**Step 6** — Leader: step forward with the left foot. Follower: step back with the right foot.",
               image: "images/basic-8-04.jpg",
-              imageFit: "contain"
+              imageFit: "contain",
+              alt: "Basic 8 step 6: leader steps forward and follower steps back"
             },
             {
-              text: "From the completed position, the leader can repeat the sequence by stepping back with the right foot.",
-              image: "images/basic-8-05.jpg",
-              imageFit: "contain"
+              text: "**Step 7** — Leader: step side with the right foot. Follower: step side with the left foot.",
+              image: "images/basic-8-step-07.jpg",
+              imageFit: "contain",
+              alt: "Basic 8 step 7: partners step to the side"
+            },
+            {
+              text: "**Step 8** — Leader: close the left foot to the right and change weight to the left. Follower: close the right foot to the left and change weight to the right, ready to repeat.",
+              image: "images/basic-8-step-08.jpg",
+              imageFit: "contain",
+              alt: "Basic 8 step 8: partners collect their feet and change weight"
             }
           ]
         },

@@ -14,7 +14,6 @@
   --panel-light:  #fffcf7;  --panel-dark:  #2a1f1c;
   --ink-light:    #2b211c;  --ink-dark:    #f0e4da;
   --radius: 10px;
-  --page: 1500px;
   --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
   --sans: "IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
@@ -77,15 +76,15 @@ body {
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.55;
-  padding-block: 16px 48px;
-  padding-inline: clamp(16px, 4vw, 40px);
+  padding: 0;
   -webkit-font-smoothing: antialiased;
 }
 a { color: var(--accent); }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
-.wrap { max-width: var(--page); margin: 0 auto; }
+/* Google Sites supplies the outer spacing around the embed. */
+.wrap { width: 100%; margin: 0; }
 
 /* ---------- toolbar (no page title: the Google Site supplies it) ---------- */
 .head { display: flex; justify-content: flex-end; padding-bottom: 14px; }
@@ -105,26 +104,24 @@ a { color: var(--accent); }
 .btn:hover { color: var(--ink); border-color: var(--ink-3); }
 
 /* ---------- layout ---------- */
-.layout { display: grid; grid-template-columns: 220px 1fr; gap: 36px; margin-top: 4px; }
-/* One visible unit needs no sidebar index. */
-.layout.solo { grid-template-columns: 1fr; }
+/* The unit index sits above the library so every lesson can use the full width. */
+.layout { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 4px; }
+/* One visible unit needs no index. */
 .layout.solo .index { display: none; }
-@media (max-width: 760px) { .layout { grid-template-columns: 1fr; gap: 20px; } }
 
-.index { position: sticky; top: 16px; align-self: start; }
-@media (max-width: 760px) { .index { position: static; } }
-.index h2 { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--heading); margin: 0 0 10px; font-weight: 500; opacity: .75; }
-.index ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.index { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); box-shadow: var(--shadow); }
+.index h2 { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--heading); margin: 0; font-weight: 500; opacity: .75; }
+.index ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: row; flex-wrap: wrap; gap: 6px; }
 .index a {
-  display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: baseline;
-  padding: 6px 8px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 14px;
+  display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: baseline;
+  padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel-2); color: var(--ink-2); text-decoration: none; font-size: 14px;
 }
-.index a:hover { background: var(--panel-2); color: var(--ink); }
+.index a:hover { background: var(--accent-soft); color: var(--ink); }
 .index a .n { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
-.index .count { margin-top: 14px; font-size: 13px; color: var(--ink-3); }
+.index .count { margin: 0; white-space: nowrap; font-size: 13px; color: var(--ink-3); }
 @media (max-width: 760px) {
-  .index ol { flex-direction: row; flex-wrap: wrap; gap: 6px; }
-  .index a { grid-template-columns: auto 1fr; padding: 5px 10px; border: 1px solid var(--line); background: var(--panel); }
+  .index { grid-template-columns: 1fr; gap: 8px; }
+  .index .count { white-space: normal; }
 }
 
 /* ---------- units ---------- */

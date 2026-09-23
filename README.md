@@ -51,7 +51,7 @@ Day to day you only open a file in `lessons/`. Each one is a single `PTC.addUnit
 - Every video also carries a "Watch on YouTube" link, in case an embed is blocked on a school or work network.
 - A lesson with no materials gives its room to the video, with the notes beside it on a wide screen.
 - Search box filters lessons by title, notes, bullet points, and material names.
-- "Expand all" / "Collapse all" buttons, a sticky unit index, and shareable links to any unit or lesson (`#u1-the-embrace-and-box-step-l3`).
+- "Expand all" / "Collapse all" buttons, a horizontal unit index above the lessons, and shareable links to any unit or lesson (`#u1-the-embrace-and-box-step-l3`).
 - Works at phone width.
 
 ## Step 1 — Put the videos somewhere embeddable
@@ -183,7 +183,7 @@ poster: "https://.../my-image.jpg",
 Groups appear on the page in the order they are listed there, so reordering the page means reordering these lines.
 
 - **To hide a group without deleting it**, add `hidden: true` as the first line inside its `PTC.addUnit({ ... })`. "Unit 2" and "Extra resources" are hidden this way right now; delete that one line to bring either back.
-- The sidebar unit index appears automatically once two or more groups are visible.
+- The horizontal unit index appears above the library once two or more groups are visible.
 
 ## Step 4 — Change colors and fonts
 
@@ -210,7 +210,6 @@ const THEME = {
   monoFont:    "IBM Plex Mono",
 
   cornerRadius: 10,                // px
-  pageWidth: 1500                  // px, how wide the page may grow
 };
 ```
 
@@ -252,7 +251,7 @@ Nothing sensible shows a whole open lesson without scrolling, so pick a height t
 
 ### Filling the width of the block
 
-The page grows to `pageWidth` in [assets/theme.js](assets/theme.js) and then centers, so in a block wider than that you get empty margins either side. Raise it to fill more, or set a huge number to fill the block completely.
+The page fills the embed's full width with no outer margin or padding. Google Sites supplies the spacing around the block; spacing inside the lesson cards is preserved.
 
 Width also changes the shape of a lesson. Past about 1100px the notes move up beside the video instead of sitting under it, which uses the gap to the video's right and makes the lesson shorter — worth having when the block's height is fixed. The key-point cards go from one column to two, three, then four as the room allows.
 
@@ -269,7 +268,7 @@ https://sericson0.github.io/ptc_website/?unit=1        first visible group
 https://sericson0.github.io/ptc_website/?unit=box      any group whose title matches
 ```
 
-The number counts visible groups only, so it shifts if you hide or unhide one; matching on a word from the title is steadier. An address that matches nothing falls back to showing the whole page. In single-group mode the sidebar index disappears and the group opens by itself.
+The number counts visible groups only, so it shifts if you hide or unhide one; matching on a word from the title is steadier. An address that matches nothing falls back to showing the whole page. In single-group mode the unit index disappears and the group opens by itself.
 
 ## Site-level structure (native Google Sites, no code)
 
