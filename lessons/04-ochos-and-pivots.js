@@ -88,6 +88,100 @@ PTC.addUnit({
         "Practice complete entries and exits for both versions: side–together–side to enter and side–together–forward to exit. Check that the exit restores parallel system."
       ],
       "materials": []
+    },
+    {
+      "title": "Lesson 2 · Ochos from the Basic 8",
+      "date": "2026-10-01",
+      "duration": "2:46",
+      "youtube": "wYkQuUdwx7A",
+      "notes": [
+        "Covers four ways to enter ochos from the basic. Great practice for improving your understanding of ochos, the basic, and helps improve your lead and follow."
+      ],
+      "sections": [
+        {
+          "title": "Enter from Step 2",
+          "points": [
+            {
+              "text": "From step 2, the leader uses step–together–step while the follower uses step–pivot–step. Both partners land stepping with the left foot.",
+              "image": "images/ochos-from-the-basic-8-01-2.jpg",
+              "imageFit": "contain"
+            },
+            {
+              "text": "Repeat for another ocho, with both partners stepping with the right foot.",
+              "image": "images/ochos-from-the-basic-8-02-2.jpg",
+              "imageFit": "contain"
+            },
+            {
+              "text": "This returns the couple to step 3, where they can continue the basic eight.",
+              "image": "images/ochos-from-the-basic-8-03-2.jpg",
+              "imageFit": "contain"
+            }
+          ]
+        },
+        {
+          "title": "Back Ochos from Step 3",
+          "points": [
+            {
+              "text": "From step 3, the leader steps backward instead of continuing forward, while the follower pivots and steps backward.",
+              "image": "images/ochos-from-the-basic-8-04-2.jpg",
+              "imageFit": "contain"
+            },
+            {
+              "text": "Repeat the ochos as desired. Return to the step-3 position to walk out and continue the basic eight.",
+              "image": "images/ochos-from-the-basic-8-05-2.jpg",
+              "imageFit": "contain"
+            }
+          ]
+        },
+        {
+          "title": "Front Ochos through Americana",
+          "points": [
+            {
+              "text": "Approach step 3 and have the follower pivot into a front ocho instead of stepping backward.",
+              "image": "images/ochos-from-the-basic-8-06-2.jpg",
+              "imageFit": "contain"
+            },
+            {
+              "text": "Enter Americana, where both partners step forward together with their inside feet.",
+              "image": "images/ochos-from-the-basic-8-07-2.jpg",
+              "imageFit": "contain"
+            },
+            {
+              "text": "The leader moves backward while the follower performs forward ochos. To exit, finish with steps 6, 7, and 8 when the leader lands on the right foot.",
+              "image": "images/ochos-from-the-basic-8-08-2.jpg",
+              "imageFit": "contain"
+            }
+          ]
+        },
+        {
+          "title": "Front Ochos from the Cross",
+          "points": [
+            {
+              "text": "Continue the basic eight to the cross at step 5.",
+              "image": "images/ochos-from-the-basic-8-09-2.jpg",
+              "imageFit": "contain"
+            },
+            {
+              "text": "The leader collects and changes weight, then steps backward with the left foot instead of forward. The follower pivots and steps forward into front ochos.",
+              "image": "images/ochos-from-the-basic-8-10-2.jpg",
+              "imageFit": "contain"
+            },
+            {
+              "text": "When the leader steps forward again, the couple returns to Americana and can exit with steps 6, 7, and 8.",
+              "image": "images/ochos-from-the-basic-8-11-2.jpg",
+              "imageFit": "contain"
+            }
+          ]
+        }
+      ],
+      "practice": [
+        "Practice the entry from step 2, checking that both partners step with the left foot first and the right foot on the next ocho, then return to step 3.",
+        "Enter back ochos from step 3, repeat them, and return to the step-3 position before walking out.",
+        "Practice the front-ocho entry through Americana. Continue with the leader moving backward, then exit through 6, 7, and 8 when the leader lands on the right foot.",
+        "Start at the cross. Practice the leader’s collection, weight change, and backward left-foot step as the follower pivots forward. Return through Americana and finish with 6, 7, and 8.",
+        "Added challenge is to come up with your own entrance to ochos from the basic."
+      ],
+      "materials": []
     }
   ]
 });
