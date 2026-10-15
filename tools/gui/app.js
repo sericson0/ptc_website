@@ -4,6 +4,15 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const state = { config: null, jobId: null, uploaded: false, draft: null, pollTimer: null };
+  let draftOperations = Promise.resolve();
+  const pendingStillSaves = new Map();
+  const stillSaveErrors = new Map();
+
+  function queueDraftOperation(operation) {
+    const pending = draftOperations.then(operation);
+    draftOperations = pending.catch(() => {});
+    return pending;
+  }
 
   async function api(url, options = {}) {
     const response = await fetch(url, {
@@ -203,6 +212,7 @@
       const card = document.createElement("div");
       card.className = "section-editor";
       card.dataset.section = sectionIndex;
+      card.draftSection = section;
       const top = document.createElement("div");
       top.className = "section-top";
       const title = document.createElement("input");
@@ -221,6 +231,7 @@
         const row = document.createElement("div");
         row.className = "point-editor";
         row.dataset.point = pointIndex;
+        row.draftPoint = point;
         const preview = document.createElement("div");
         preview.className = "point-image";
         if (point.image || point.stagedImage) {
@@ -260,8 +271,8 @@
         const refresh = document.createElement("button");
         refresh.type = "button";
         refresh.className = "text-button refresh-still";
-        refresh.textContent = "Save this still";
-        refresh.title = "Save the frame currently shown at this timestamp";
+        refresh.textContent = "Update now";
+        refresh.title = "Timestamps save automatically; click to update immediately";
         meta.append(timeLabel, refresh, removePoint);
         fields.append(text, meta);
         row.append(preview, fields);
@@ -302,26 +313,140 @@
     draft.youtube.description = $("#youtube-description").value.trim();
     draft.youtube.tags = $("#youtube-tags").value.split(",").map((item) => item.trim()).filter(Boolean);
     draft.youtube.playlistUrl = $("#review-playlist").value.trim();
-    draft.lesson.sections = $$(".section-editor").map((card, sectionIndex) => {
-      const previous = draft.lesson.sections[sectionIndex] || { points: [] };
-      return {
-        ...previous,
+    draft.lesson.sections = $$(".section-editor").map((card) => {
+      const previous = card.draftSection;
+      return Object.assign(previous, {
         title: $(".section-title-input", card).value.trim(),
-        points: $$(".point-editor", card).map((row, pointIndex) => ({
-          ...(previous.points?.[pointIndex] || {}),
+        points: $$(".point-editor", card).map((row) => Object.assign(row.draftPoint, {
           text: $(".point-text", row).value.trim(),
           timeSeconds: Number($(".point-time", row).value) || 0,
         })),
-      };
+      });
     });
     return draft;
   }
 
-  async function saveDraft() {
+  async function persistCurrentDraft() {
     collectDraft();
-    $("#save-state").textContent = "Saving…";
     await api(`/api/jobs/${state.jobId}/draft`, { method: "PUT", body: JSON.stringify({ draft: state.draft }) });
-    $("#save-state").textContent = "Draft saved locally";
+  }
+
+  function saveDraft() {
+    flushPendingStillSaves();
+    return queueDraftOperation(async () => {
+      $("#save-state").textContent = "Saving…";
+      await persistCurrentDraft();
+      for (const [point, { timeSeconds, error }] of stillSaveErrors) {
+        if (pointLocation(point) && point.timeSeconds === timeSeconds) {
+          $("#save-state").textContent = "Draft saved; image update needs retry";
+          throw new Error(`Draft saved, but the image at ${timeSeconds} seconds could not be updated. Use Update now to retry. ${error.message}`);
+        }
+      }
+      $("#save-state").textContent = "Draft saved locally";
+    });
+  }
+
+  function pointLocation(point) {
+    for (const [section, item] of state.draft.lesson.sections.entries()) {
+      const index = item.points.indexOf(point);
+      if (index !== -1) return { section, point: index };
+    }
+    return null;
+  }
+
+  function saveStill(row, button) {
+    if (button.disabled) return;
+    const point = row.draftPoint;
+    const timeSeconds = Math.max(0, Number($(".point-time", row).value) || 0);
+    clearTimeout(pendingStillSaves.get(point)?.timer);
+    pendingStillSaves.delete(point);
+    return savePointStill(point, timeSeconds);
+  }
+
+  function savePointStill(point, timeSeconds) {
+    const row = $$(".point-editor").find((candidate) => candidate.draftPoint === point);
+    const button = row && $(".refresh-still", row);
+    if (row) {
+      clearTimeout(row.previewTimer);
+      delete row.dataset.previewRequest;
+      button.disabled = true;
+    }
+    $("#save-state").textContent = "Saving still…";
+    return queueDraftOperation(async () => {
+      // Save current edits before extraction; the response must never replace the editor.
+      collectDraft();
+      const location = pointLocation(point);
+      if (!location || point.timeSeconds !== timeSeconds) return;
+      await persistCurrentDraft();
+      collectDraft();
+      if (!pointLocation(point) || point.timeSeconds !== timeSeconds) {
+        await persistCurrentDraft();
+        $("#save-state").textContent = "Draft saved locally";
+        return;
+      }
+      const { draft } = await api(`/api/jobs/${state.jobId}/image`, {
+        method: "POST",
+        body: JSON.stringify({ ...location, timeSeconds }),
+      });
+      const saved = draft.lesson.sections[location.section].points[location.point];
+      collectDraft();
+      let showSavedImage = false;
+      if (pointLocation(point)) {
+        point.stagedImage = saved.stagedImage;
+        delete point.image;
+        const currentRow = $$(".point-editor").find((candidate) => candidate.draftPoint === point);
+        // A newer timestamp preview remains visible while this save finishes.
+        if (currentRow && Number($(".point-time", currentRow).value) === timeSeconds) {
+          point.timeSeconds = saved.timeSeconds;
+          $(".point-time", currentRow).value = saved.timeSeconds;
+          clearTimeout(currentRow.previewTimer);
+          delete currentRow.dataset.previewRequest;
+          currentRow.classList.remove("previewing");
+          showSavedImage = true;
+        }
+      }
+      // Persist edits made during extraction, including removals and reordering.
+      const savedLocation = pointLocation(point);
+      await persistCurrentDraft();
+      const currentRow = $$(".point-editor").find((candidate) => candidate.draftPoint === point);
+      if (showSavedImage && currentRow && Number($(".point-time", currentRow).value) === saved.timeSeconds) {
+        const preview = $(".point-image", currentRow);
+        let image = $("img", preview);
+        if (!image) {
+          image = document.createElement("img");
+          image.alt = "Saved video still";
+          preview.prepend(image);
+        }
+        image.src = `/api/jobs/${state.jobId}/image?section=${savedLocation.section}&point=${savedLocation.point}&v=${Date.now()}`;
+        $(".still-time", currentRow).textContent = `${Number(saved.timeSeconds).toFixed(1)} sec · saved`;
+      }
+      stillSaveErrors.delete(point);
+      $("#save-state").textContent = "New still and draft saved locally";
+    }).catch((error) => {
+      stillSaveErrors.set(point, { timeSeconds, error });
+      $("#save-state").textContent = "Still save did not finish";
+      showAlert(error.message);
+    }).finally(() => { if (button) button.disabled = false; });
+  }
+
+  function scheduleStillSave(row) {
+    const point = row.draftPoint;
+    const timeSeconds = Math.max(0, Number($(".point-time", row).value) || 0);
+    clearTimeout(pendingStillSaves.get(point)?.timer);
+    const timer = setTimeout(() => {
+      pendingStillSaves.delete(point);
+      savePointStill(point, timeSeconds);
+    }, 800);
+    pendingStillSaves.set(point, { timer, timeSeconds });
+    $("#save-state").textContent = "Timestamp changed — image will save automatically";
+  }
+
+  function flushPendingStillSaves() {
+    for (const [point, { timer, timeSeconds }] of pendingStillSaves) {
+      clearTimeout(timer);
+      pendingStillSaves.delete(point);
+      savePointStill(point, timeSeconds);
+    }
   }
 
   function updateTitleCount() {
@@ -331,14 +456,10 @@
   function previewStill(row) {
     const timeInput = $(".point-time", row);
     const preview = $(".point-image", row);
-    let image = $("img", preview);
+    const image = document.createElement("img");
+    image.alt = "Timestamp preview";
     const stamp = $(".still-time", row);
     const timestamp = Math.max(0, Number(timeInput.value) || 0);
-    if (!image) {
-      image = document.createElement("img");
-      image.alt = "Timestamp preview";
-      preview.prepend(image);
-    }
     const requestKey = `${timestamp}:${Date.now()}`;
     row.dataset.previewRequest = requestKey;
     row.classList.add("previewing");
@@ -347,6 +468,8 @@
     const loaded = () => {
       if (row.dataset.previewRequest !== requestKey) return;
       row.classList.remove("previewing");
+      $("img", preview)?.remove();
+      preview.prepend(image);
       stamp.textContent = `${timestamp.toFixed(1)} sec · preview`;
     };
     const failed = () => {
@@ -385,6 +508,7 @@
     }
     try {
       button.disabled = true;
+      $("#review-panel").inert = true;
       await saveDraft();
       await api(`/api/jobs/${state.jobId}/approve`, { method: "POST", body: JSON.stringify(body) });
       showAlert("");
@@ -394,6 +518,8 @@
     } catch (error) {
       button.disabled = false;
       showAlert(error.message);
+    } finally {
+      $("#review-panel").inert = false;
     }
   }
 
@@ -529,18 +655,7 @@
     if (!sectionCard) return;
     const sectionIndex = Number(sectionCard.dataset.section);
     if (event.target.closest(".refresh-still")) {
-      collectDraft();
-      const pointIndex = Number(event.target.closest(".point-editor").dataset.point);
-      const timeSeconds = state.draft.lesson.sections[sectionIndex].points[pointIndex].timeSeconds;
-      $("#save-state").textContent = "Refreshing still…";
-      api(`/api/jobs/${state.jobId}/image`, {
-        method: "POST",
-        body: JSON.stringify({ section: sectionIndex, point: pointIndex, timeSeconds }),
-      }).then(({ draft }) => {
-        state.draft = draft;
-        renderSections();
-        $("#save-state").textContent = "New still saved locally";
-      }).catch((error) => showAlert(error.message));
+      saveStill(event.target.closest(".point-editor"), event.target.closest(".refresh-still"));
       return;
     }
     collectDraft();
@@ -555,7 +670,9 @@
   });
   $("#sections-editor").addEventListener("input", (event) => {
     if (!event.target.matches(".point-time")) return;
-    scheduleStillPreview(event.target.closest(".point-editor"));
+    const row = event.target.closest(".point-editor");
+    scheduleStillPreview(row);
+    scheduleStillSave(row);
   });
   $("#another-button").addEventListener("click", () => { localStorage.removeItem("ptcCurrentJob"); location.reload(); });
 

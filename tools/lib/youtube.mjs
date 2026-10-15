@@ -36,7 +36,12 @@ async function tokenRequest(params) {
     body: new URLSearchParams(params),
   });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(`YouTube OAuth failed (${response.status}): ${body.error_description || body.error || response.statusText}`);
+  if (!response.ok) {
+    throw Object.assign(new Error(`YouTube OAuth failed (${response.status}): ${body.error_description || body.error || response.statusText}`), {
+      code: body.error,
+      status: response.status,
+    });
+  }
   return body;
 }
 
@@ -126,20 +131,28 @@ export async function getYouTubeAccessToken(clientFile, tokenFile, requiredScope
     return token.access_token;
   }
   if (token?.refresh_token && tokenHasScopes(token, requiredScopes)) {
-    const refreshed = await tokenRequest({
-      client_id: credentials.client_id,
-      client_secret: credentials.client_secret,
-      refresh_token: token.refresh_token,
-      grant_type: "refresh_token",
-    });
-    token = {
-      ...token,
-      ...refreshed,
-      refresh_token: refreshed.refresh_token || token.refresh_token,
-      expires_at: Date.now() + (refreshed.expires_in || 3600) * 1000,
-    };
-    await writePrivateJson(tokenFile, token);
-    return token.access_token;
+    let refreshed;
+    try {
+      refreshed = await tokenRequest({
+        client_id: credentials.client_id,
+        client_secret: credentials.client_secret,
+        refresh_token: token.refresh_token,
+        grant_type: "refresh_token",
+      });
+    } catch (error) {
+      if (error.status !== 400 || error.code !== "invalid_grant") throw error;
+      console.log("Your saved YouTube authorization expired or was revoked. Sign in to Google again to reconnect.");
+    }
+    if (refreshed) {
+      token = {
+        ...token,
+        ...refreshed,
+        refresh_token: refreshed.refresh_token || token.refresh_token,
+        expires_at: Date.now() + (refreshed.expires_in || 3600) * 1000,
+      };
+      await writePrivateJson(tokenFile, token);
+      return token.access_token;
+    }
   }
 
   const granted = await authorizeInteractively(credentials, requiredScopes);

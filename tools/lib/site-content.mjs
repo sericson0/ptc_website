@@ -101,7 +101,7 @@ function indentJson(value, spaces) {
 
 export async function appendLesson(filePath, lesson) {
   const source = await fs.readFile(filePath, "utf8");
-  const property = /\blessons\s*:\s*\[/.exec(source);
+  const property = /(?:\blessons|"lessons"|'lessons')\s*:\s*\[/.exec(source);
   if (!property) throw new Error(`Could not find a lessons array in ${filePath}`);
   const openIndex = source.indexOf("[", property.index);
   const closeIndex = matchingBracket(source, openIndex);

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import { randomUUID } from "node:crypto";
 import fsp from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
@@ -406,9 +407,9 @@ async function route(request, response) {
       const draft = JSON.parse(await fsp.readFile(job.draftPath, "utf8"));
       const item = draft.lesson?.sections?.[section]?.points?.[point];
       if (!item) return json(response, 404, { error: "Teaching point not found." });
-      const imagePath = path.join(job.jobDir, "stills", `manual-${section + 1}-${point + 1}.jpg`);
+      const imagePath = path.join(job.jobDir, "stills", `manual-${randomUUID()}.jpg`);
       const actualTimestamp = await extractStill(job.videoPath, timestamp + 0.35, imagePath);
-      item.timeSeconds = Math.max(0, actualTimestamp - 0.35);
+      item.timeSeconds = actualTimestamp === timestamp + 0.35 ? timestamp : Math.max(0, actualTimestamp - 0.35);
       item.stagedImage = path.relative(ROOT, imagePath).replaceAll(path.sep, "/");
       delete item.image;
       await saveDraft(job.draftPath, draft);

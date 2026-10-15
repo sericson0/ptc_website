@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { appendLesson, createUnit, discoverUnits, formatDuration, lessonFromDraft, slugify, updateGeneratedYouTubeId } from "../tools/lib/site-content.mjs";
+import { appendLesson, applyDraftToSite, createUnit, discoverUnits, formatDuration, lessonFromDraft, slugify, updateGeneratedYouTubeId } from "../tools/lib/site-content.mjs";
 import { playlistIdFromUrl } from "../tools/lib/youtube.mjs";
 
 test("small formatting helpers", () => {
@@ -35,6 +35,46 @@ test("createUnit registers the generated file in index.html", async (t) => {
   assert.equal(result.relativeFile, "lessons/02-new-unit.js");
   const units = await discoverUnits(dir);
   assert.deepEqual(units.map((unit) => unit.title), ["Old", "New Unit"]);
+});
+
+test("applyDraftToSite appends a second lesson to a generated unit", async (t) => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "ptc-site-test-"));
+  t.after(() => fs.rm(dir, { recursive: true, force: true }));
+  await fs.mkdir(path.join(dir, "lessons"));
+  await fs.writeFile(path.join(dir, "index.html"), "<!-- ============================================================ -->\n");
+  const firstLesson = { title: "First [demo]", notes: "not ] the end", youtube: "firstVideo" };
+  const { relativeFile } = await createUnit(dir, {
+    title: "Ochos and pivots",
+    summary: "Front and back ochos",
+    lessons: [firstLesson],
+  });
+  const draft = {
+    placement: { type: "existing", relativeFile },
+    lesson: { title: "Ochos from the Basic 8", notes: ["Pivot before stepping."] },
+    youtube: { videoId: "secondVideo" },
+  };
+  const result = await applyDraftToSite(dir, draft);
+  const [unit] = await discoverUnits(dir);
+  assert.equal(result.relativeFile, relativeFile);
+  assert.equal(unit.lessonCount, 2);
+  assert.deepEqual(JSON.parse(JSON.stringify(unit.lessons[0])), firstLesson);
+  assert.equal(unit.lessons[1].title, result.lessonTitle);
+  assert.match(unit.lessons[1].title, /^Lesson 2 /);
+  assert.equal(unit.lessons[1].youtube, "secondVideo");
+  assert.equal(unit.lessons[1].notes[0], "Pivot before stepping.");
+});
+
+test("appendLesson accepts a single-quoted lessons property", async (t) => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "ptc-site-test-"));
+  t.after(() => fs.rm(dir, { recursive: true, force: true }));
+  await fs.mkdir(path.join(dir, "lessons"));
+  await fs.writeFile(path.join(dir, "index.html"), '<script defer src="lessons/unit.js"></script>\n');
+  const file = path.join(dir, "lessons", "unit.js");
+  await fs.writeFile(file, "PTC.addUnit({ title: 'Unit', 'lessons': [] });\n");
+  await appendLesson(file, { title: "First lesson" });
+  const [unit] = await discoverUnits(dir);
+  assert.equal(unit.lessonCount, 1);
+  assert.equal(unit.lessons[0].title, "First lesson");
 });
 
 test("lessonFromDraft strips workflow-only timestamps", () => {

@@ -40,6 +40,17 @@ Both `.env` and `secrets/` are ignored by Git. The first YouTube upload opens a
 browser for Google authorization and stores the refresh token under
 `.ptc-work/`, which is also ignored.
 
+If Google reports that the saved YouTube token expired or was revoked, the app
+opens Google authorization again automatically. Sign in with the account that
+owns the YouTube channel and return to Video Studio to let the approved action
+finish. Your lesson draft is kept. After updating this tool, restart Video Studio
+to load the fix, then retry the approved action from the existing review screen.
+
+An external Google OAuth app in **Testing** issues refresh tokens that expire
+after seven days for YouTube access. To avoid that recurring expiry, review the
+app's publishing status under **Google Auth Platform > Audience** in Google Cloud
+Console. See [Google's refresh-token expiration documentation](https://developers.google.com/identity/protocols/oauth2#expiration).
+
 ## Open the graphical app
 
 Double-click `open-video-studio.cmd`, or run:
@@ -54,13 +65,26 @@ choose its unit, and follow the progress and review screens. Large videos are
 streamed directly into the ignored `.ptc-work/` folder instead of being held in
 browser or server memory.
 
+On Windows, Video Studio can use Codex bundled with the VS Code extension even
+when `codex` is not on the normal system PATH. If it shows **Local AI setup
+required**, the alert above the form identifies whether Whisper or the Codex
+login needs attention. After resolving it, restart Video Studio and refresh
+the browser page.
+
 The review screen lets you edit every lesson note, teaching point, timestamp,
 practice prompt, title, description, tag, and playlist. Changing a timestamp
-quickly previews that frame; **Save this still** keeps it. The final controls
+quickly previews that frame and automatically saves it after a short pause.
+**Update now** saves immediately. **Save draft** and approval wait for pending
+image updates, so they use your selected timestamps. The final controls
 separately approve the website update, private YouTube upload, and playlist
 addition. After the approved actions finish, **Commit & push to GitHub** commits
 only that lesson file, its generated images, and `index.html` when a new unit was
 created, then pushes the current branch to `origin`.
+
+Saving a still also saves your current draft edits. Each still updates in place,
+so you can keep editing text or choosing another timestamp while extraction is
+running. Still saves and **Save draft** run in order to preserve earlier image
+choices. A failed extraction keeps the previously saved image.
 
 ## Command-line alternative
 

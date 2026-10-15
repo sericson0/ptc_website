@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { spawn, spawnSync } from "node:child_process";
+import { codexInvocation } from "./codex-cli.mjs";
 
 function subscriptionEnvironment() {
   const env = { ...process.env, NO_COLOR: "1" };
@@ -57,7 +58,8 @@ export function subscriptionStatus(root) {
     };
   }
 
-  const codexProbe = spawnSync("codex", ["login", "status"], {
+  const codex = codexInvocation();
+  const codexProbe = spawnSync(codex.command, [...codex.prefix, "login", "status"], {
     cwd: root,
     env: subscriptionEnvironment(),
     windowsHide: true,
@@ -68,7 +70,9 @@ export function subscriptionStatus(root) {
     return {
       ready: false,
       provider: "ChatGPT subscription + local Whisper",
-      problem: "Run codex login and choose Sign in with ChatGPT.",
+      problem: codexProbe.error
+        ? "Video Studio could not start Codex. Install the Codex CLI or the Codex VS Code extension, then restart Video Studio."
+        : "Run codex login and choose Sign in with ChatGPT.",
     };
   }
   return { ready: true, provider: "ChatGPT subscription + local Whisper", problem: "" };
@@ -120,7 +124,9 @@ export async function createLessonDraftWithSubscription({ transcript, context, r
   } catch (error) {
     if (error.code !== "ENOENT" && !(error instanceof SyntaxError)) throw error;
   }
-  await run("codex", [
+  const codex = codexInvocation();
+  await run(codex.command, [
+    ...codex.prefix,
     "exec",
     "--ephemeral",
     "--sandbox", "read-only",
