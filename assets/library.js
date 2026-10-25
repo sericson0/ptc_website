@@ -163,7 +163,7 @@
       ICONS.chev + '</summary>' +
       '<div class="body' + (mats ? "" : " solo") + '">' +
         '<div class="main">' +
-          '<div class="media">' +
+          (lesson.resourceOnly && !v ? "" : '<div class="media">' +
             '<div class="player">' + (v
               ? '<button class="poster" type="button" data-src="' + esc(v.src) + '" aria-label="Play ' + esc(lesson.title) + '">' +
                   (v.posters.length ? '<img src="' + esc(v.posters[0]) + '" data-more="' + esc(v.posters.slice(1).join("|")) + '" alt="" loading="lazy">' : "") +
@@ -173,7 +173,7 @@
               (v ? '<a href="' + esc(v.watch) + '" target="_blank" rel="noopener">Watch on ' + v.where + ' &#8599;</a>' : "") +
               (mats ? "" : '<a href="#' + lid + '">Link to this lesson</a>') +
             '</p>' +
-          '</div>' +
+          '</div>') +
           '<div class="write">' + notesOf(lesson) + '</div>' +
           '<div class="blocks">' + blocksOf(lesson) + '</div>' +
         '</div>' +

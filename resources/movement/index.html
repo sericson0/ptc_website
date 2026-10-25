@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Language for Analyzing Movement - Presented at Intercambio de Tango October 25, 2026</title>
+<style>
+  :root { color-scheme: dark; font-family: Arial, sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: #16191d; color: #fff; display: flex; flex-direction: column; }
+  main { flex: 1; min-height: 0; display: grid; place-items: center; padding: 12px; }
+  #stage { width: min(calc((100vh - 80px) * 16 / 9), calc(100vw - 24px)); aspect-ratio: 16 / 9; position: relative; background: #111; box-shadow: 0 8px 36px #0008; }
+  #slide { display: block; width: 100%; height: 100%; }
+  #media { position: absolute; overflow: hidden; }
+  #media video { display: block; width: 100%; height: 100%; object-fit: contain; background: #000; visibility: hidden; }
+  #play { position: absolute; inset: 0; margin: auto; width: 68px; height: 68px; border: 2px solid white; border-radius: 50%; background: #e77500; color: white; font-size: 32px; cursor: pointer; box-shadow: 0 3px 14px #000a; }
+  #play:hover, #play:focus-visible { background: #bc6100; }
+  #play[hidden], #media[hidden] { display: none; }
+  nav { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 8px; }
+  nav button { background: #333b44; color: white; border: 1px solid #737d88; border-radius: 5px; padding: 8px 14px; font-size: 16px; cursor: pointer; }
+  nav button:hover, nav button:focus-visible { background: #e77500; }
+  #counter { min-width: 80px; text-align: center; }
+  body:fullscreen main { padding: 0; }
+  body:fullscreen #stage { width: min(100vw, calc((100vh - 56px) * 16 / 9)); }
+</style>
+</head>
+<body>
+<main><div id="stage"><img id="slide" alt="Presentation slide"><div id="media" hidden><video id="video" controls loop playsinline preload="none"></video><button id="play" type="button" aria-label="Play video">▶</button></div></div></main>
+<nav aria-label="Slide controls"><button id="previous" type="button">Previous</button><span id="counter"></span><button id="next" type="button">Next</button><button id="fullscreen" type="button">Full screen</button></nav>
+<script>
+const slides = [{"image": "slides/38d9d8c15abbaae9/page-01.jpg", "title": "A Language for Analyzing Movement", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-02.jpg", "title": "How Do We Describe Movement?", "movie": {"src": "videos/Nick%20and%20Diana%20Clip.mp4?v=8c6f56b2d91e6a2d", "autoplay": false, "left": 46.5506026991928, "top": 31.040146128458204, "width": 46.57441521531586, "height": 46.57335037120078}}, {"image": "slides/38d9d8c15abbaae9/page-03.jpg", "title": "How Do We Describe Movement?", "movie": {"src": "videos/Nick%20and%20Diana%20Clip.mp4?v=8c6f56b2d91e6a2d", "autoplay": false, "left": 46.5506026991928, "top": 31.040146128458204, "width": 46.57441521531586, "height": 46.57335037120078}}, {"image": "slides/38d9d8c15abbaae9/page-04.jpg", "title": "A Language for Movement", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-05.jpg", "title": "Joints and Fascia", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-06.jpg", "title": "Joints", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-07.jpg", "title": "Lower body", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-08.jpg", "title": "Hip Extension and Flexion", "movie": {"src": "videos/joint-movements/hip-extension-flexion.mp4?v=a214118271dc2d82", "autoplay": false, "left": 45.68717850347156, "top": 29.572589938773426, "width": 47.4378394110371, "height": 47.432168643529664}}, {"image": "slides/38d9d8c15abbaae9/page-09.jpg", "title": "Knee Extension and Flexion", "movie": {"src": "videos/joint-movements/knee-extension-flexion.mp4?v=a9ba2815ec6e1949", "autoplay": false, "left": 45.68717850347156, "top": 29.572589938773426, "width": 47.4378394110371, "height": 47.432168643529664}}, {"image": "slides/38d9d8c15abbaae9/page-10.jpg", "title": "Ankle Pointing and Flexing", "movie": {"src": "videos/joint-movements/tangle-an_df-R(1).mp4?v=16caf17ae0b6ed9f", "autoplay": false, "left": 45.68717850347156, "top": 29.572589938773426, "width": 47.4378394110371, "height": 47.432168643529664}}, {"image": "slides/38d9d8c15abbaae9/page-11.jpg", "title": "Toe Point and Flex", "movie": {"src": "videos/joint-movements/tangle-to_ext-R(1).mp4?v=96470be372aeb757", "autoplay": false, "left": 45.68717850347156, "top": 29.963389490353485, "width": 47.4378394110371, "height": 47.43216864352965}}, {"image": "slides/38d9d8c15abbaae9/page-12.jpg", "title": "Toe Point and Flex", "movie": {"src": "videos/joint-movements/tangle-to_ext-R(1).mp4?v=96470be372aeb757", "autoplay": false, "left": 45.68717850347156, "top": 29.963389490353485, "width": 47.4378394110371, "height": 47.43216864352965}}, {"image": "slides/38d9d8c15abbaae9/page-13.jpg", "title": "Passing Through Demi Point", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-14.jpg", "title": "Triple Flexion and Triple Extension", "movie": {"src": "videos/walk%20angles.mp4?v=7341fa8c8018f5c9", "autoplay": false, "left": 61.55116493915681, "top": 23.94225417257896, "width": 30.37242334243942, "height": 53.99932580217782}}, {"image": "slides/38d9d8c15abbaae9/page-15.jpg", "title": "Quick Promotion: InForm", "movie": {"src": "videos/InForm%20Example.mp4?v=accc9f9a33c81cc4", "autoplay": true, "left": 15.639751908859802, "top": 20.54539468010881, "width": 22.14608096696454, "height": 69.9997648147132}}, {"image": "slides/38d9d8c15abbaae9/page-16.jpg", "title": "Hip Abduction and Adduction", "movie": {"src": "videos/joint-movements/hip-abduction-adduction.mp4?v=84d9b38d123ca5f3", "autoplay": false, "left": 45.68717850347156, "top": 29.572589938773426, "width": 47.4378394110371, "height": 47.432168643529664}}, {"image": "slides/38d9d8c15abbaae9/page-17.jpg", "title": "Adduction and Abduction", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-18.jpg", "title": "When in Doubt, Adduct", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-19.jpg", "title": "Finding Balance", "movie": {"src": "videos/Finding%20Balance.mp4?v=494451c1fcd69acc", "autoplay": false, "left": 16.362505870446682, "top": 21.63743836185608, "width": 67.27498825910664, "height": 67.26965561034503}}, {"image": "slides/38d9d8c15abbaae9/page-20.jpg", "title": "Winging and Sickling", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-21.jpg", "title": "The Outrigger Foot", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-22.jpg", "title": "Hip Internal and External Rotation", "movie": {"src": "videos/Internal%20External%20Rotation-cropped.mp4?v=6da4dc9d270b303d", "autoplay": false, "left": 59.99453194074211, "top": 20.54539468010881, "width": 19.686556732217227, "height": 69.9997648147132}}, {"image": "slides/38d9d8c15abbaae9/page-23.jpg", "title": "Lower Body Movement Summary", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-24.jpg", "title": "Practice Terminology", "movie": {"src": "videos/Nick%20and%20Diana%20Clip.mp4?v=8c6f56b2d91e6a2d", "autoplay": false, "left": 16.362505870446682, "top": 21.63587045994403, "width": 67.27498825910664, "height": 67.27396734060316}}, {"image": "slides/38d9d8c15abbaae9/page-25.jpg", "title": "Practice Terminology", "movie": {"src": "videos/walking_slowed_down.mp4?v=66a950e8d272f69b", "autoplay": false, "left": 16.362505870446682, "top": 21.63743836185608, "width": 67.27498825910664, "height": 67.26965561034503}}, {"image": "slides/38d9d8c15abbaae9/page-26.jpg", "title": "Spine and Pelvis", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-27.jpg", "title": "Posture Cue", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-28.jpg", "title": "Posture Cue", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-29.jpg", "title": "Posture Cue", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-30.jpg", "title": "Spinal Twist", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-31.jpg", "title": "Shoulder", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-32.jpg", "title": "Scapular Movements", "movie": {"src": "videos/joint-movements/tangle-sc_elev-L.webm?v=5ba996544b39c282", "autoplay": false, "left": 45.68717850347156, "top": 27.448082847937037, "width": 47.4378394110371, "height": 47.43256061900767}}, {"image": "slides/38d9d8c15abbaae9/page-33.jpg", "title": "Scapular Movements", "movie": {"src": "videos/joint-movements/tangle-sc_pro-L.webm?v=1fa083877aab2936", "autoplay": false, "left": 45.68717850347156, "top": 29.806599299147845, "width": 47.4378394110371, "height": 47.43256061900767}}, {"image": "slides/38d9d8c15abbaae9/page-34.jpg", "title": "Shoulder Motions", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-35.jpg", "title": "Exercise: Pivot Positions", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-36.jpg", "title": "Upper Body Movement Summary", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-37.jpg", "title": "Fascial Lines", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-38.jpg", "title": "Front and Back Lines", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-39.jpg", "title": "Leg ‘Starts at Your Chest’", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-40.jpg", "title": "Heel Fascia and the Back Line", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-41.jpg", "title": "Fascial Lines and Communication", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-42.jpg", "title": "Twisting", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-43.jpg", "title": "Spiral Counter-Spiral", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-44.jpg", "title": "Front and Back Arm Lines", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-45.jpg", "title": "Putting Knowledge Into Practice", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-46.jpg", "title": "Putting Knowledge Into Practice", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-47.jpg", "title": "Putting Knowledge Into Practice", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-48.jpg", "title": "Putting Knowledge Into Practice", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-49.jpg", "title": "Putting Knowledge Into Practice", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-50.jpg", "title": "Putting Knowledge Into Practice", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-51.jpg", "title": "Putting Knowledge Into Practice", "movie": null}, {"image": "slides/38d9d8c15abbaae9/page-52.jpg", "title": "Questions", "movie": null}];
+const slide = document.getElementById('slide');
+const media = document.getElementById('media');
+let video = document.getElementById('video');
+const play = document.getElementById('play');
+const counter = document.getElementById('counter');
+let index = 0;
+function show(next) {
+  if (!Number.isInteger(next) || next < 0 || next >= slides.length) return;
+  media.hidden = true;
+  play.hidden = true;
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
+  // A fresh element prevents queued events from a previous movie from
+  // revealing it on a later slide or hiding the new slide's play button.
+  const nextVideo = video.cloneNode(false);
+  video.replaceWith(nextVideo);
+  video = nextVideo;
+  video.autoplay = false;
+  video.muted = false;
+  video.style.visibility = 'hidden';
+  index = next;
+  const item = slides[index];
+  slide.src = item.image;
+  slide.alt = `${item.title}, page ${index + 1} of ${slides.length}`;
+  counter.textContent = `${index + 1} / ${slides.length}`;
+  document.getElementById('previous').disabled = index === 0;
+  document.getElementById('next').disabled = index === slides.length - 1;
+  media.hidden = !item.movie;
+  if (item.movie) {
+    for (const key of ['left', 'top', 'width', 'height']) media.style[key] = item.movie[key] + '%';
+    video.autoplay = Boolean(item.movie.autoplay);
+    video.muted = video.autoplay;
+    video.src = item.movie.src;
+    play.hidden = false;
+    nextVideo.addEventListener('play', () => {
+      if (video !== nextVideo) return;
+      video.style.visibility = 'visible';
+      play.hidden = true;
+    });
+    if (video.autoplay) {
+      nextVideo.play().catch(() => {
+        if (video === nextVideo) play.hidden = false;
+      });
+    }
+  }
+  history.replaceState(null, '', '#' + (index + 1));
+}
+play.addEventListener('click', async () => {
+  const activeVideo = video;
+  try {
+    await activeVideo.play();
+    if (video === activeVideo) play.hidden = true;
+  }
+  catch (error) {
+    if (video === activeVideo) alert('Unable to play this video. Keep the videos folder beside presentation.html.');
+  }
+});
+slide.addEventListener('click', () => show(index + 1));
+document.getElementById('previous').addEventListener('click', () => show(index - 1));
+document.getElementById('next').addEventListener('click', () => show(index + 1));
+document.getElementById('fullscreen').addEventListener('click', () => {
+  if (document.fullscreenElement) document.exitFullscreen(); else document.body.requestFullscreen();
+});
+function showFromHash() {
+  const page = Number(location.hash.slice(1) || 1);
+  show(Number.isInteger(page) ? Math.max(0, Math.min(slides.length - 1, page - 1)) : 0);
+}
+window.addEventListener('hashchange', showFromHash);
+document.addEventListener('keydown', event => {
+  if (event.target === video || event.altKey || event.ctrlKey || event.metaKey) return;
+  if (event.key === 'ArrowRight' || event.key === 'PageDown') { event.preventDefault(); show(index + 1); }
+  if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); show(index - 1); }
+});
+showFromHash();
+</script>
+</body>
+</html>

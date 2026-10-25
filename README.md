@@ -8,6 +8,21 @@ A small static site that shows class videos and materials in collapsible units a
 
 To preview before pushing, double-click `index.html` — it runs straight from disk, no server needed.
 
+## Movement presentation resource
+
+The Extra resources group links to **A Language for Analyzing Movement**, presented
+at Intercambio de Tango on October 25, 2026:
+
+https://sericson0.github.io/ptc_website/resources/movement/
+
+The presentation lives in `resources/movement/index.html`, with its referenced
+slide images and videos beside it. No PDF download is included. Extra resources
+loads after the lesson groups so existing numeric `?unit=` links keep their order.
+
+To refresh it, compile the original lecture and run `build_presentation.py`, then
+run `export_website.py` from the lecture folder with this checkout's path. The
+export copies only the current presentation's referenced images and videos.
+
 ## Add a lesson from a finished video
 
 Open the local Video Studio, then drag a finished video onto it. The graphical
